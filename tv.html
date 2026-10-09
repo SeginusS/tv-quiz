@@ -116,4 +116,70 @@
       document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
 
       ['A', 'B', 'C', 'D'].forEach(opt => {
-        document.getElementById(`opt${opt}`).classList.
+        document.getElementById(`opt${opt}`).classList.remove('correct-ans');
+        document.getElementById(`avatars${opt}`).innerHTML = '';
+      });
+
+      document.getElementById('timerBar').style.width = '100%';
+    });
+
+    socket.on('timer-update', (timeLeft) => {
+      document.getElementById('timerText').textContent = timeLeft;
+      const percentage = (timeLeft / 30) * 100;
+      document.getElementById('timerBar').style.width = percentage + '%';
+    });
+
+    socket.on('reveal-answer', (data) => {
+      document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
+
+      for (let id in data.answersState) {
+        const ansObj = data.answersState[id];
+        const bubble = document.createElement('div');
+        bubble.className = 'player-bubble';
+        bubble.textContent = ansObj.initial;
+        bubble.title = ansObj.name;
+
+        const container = document.getElementById(`avatars${ansObj.answer}`);
+        if (container) container.appendChild(bubble);
+      }
+
+      updateScoreboard(data.playersList);
+    });
+
+    socket.on('game-over', (data) => {
+      document.getElementById('questionSection').style.display = 'none';
+      document.getElementById('gameOverSection').style.display = 'flex';
+      
+      // Γεμίζουμε τον μεγάλο πίνακα τελικών αποτελεσμάτων
+      const finalContainer = document.getElementById('finalScoreboardList');
+      finalContainer.innerHTML = '';
+      
+      data.playersList.sort((a, b) => b.score - a.score).forEach((p, index) => {
+        const row = document.createElement('div');
+        row.className = 'final-score-row';
+        
+        let medal = `#${index + 1}`;
+        if (index === 0) medal = '🥇';
+        else if (index === 1) medal = '🥈';
+        else if (index === 2) medal = '🥉';
+
+        row.innerHTML = `<span><strong>${medal}</strong> ${p.name}</span> <strong style="color: #38bdf8;">${p.score} πόντοι</strong>`;
+        finalContainer.appendChild(row);
+      });
+
+      updateScoreboard(data.playersList);
+    });
+
+    function updateScoreboard(playersList) {
+      const listEl = document.getElementById('scoreboardList');
+      listEl.innerHTML = '';
+      playersList.sort((a, b) => b.score - a.score).forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'player-row';
+        row.innerHTML = `<span>${p.name} ${p.isHost ? '👑' : ''}</span> <strong>${p.score}</strong>`;
+        listEl.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

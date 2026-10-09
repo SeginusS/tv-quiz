@@ -7,7 +7,9 @@
   <style>
     body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
     .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-    .sidebar { width: 320px; background: #1e293b; border-left: 2px solid #334155; padding: 20px; display: flex; flex-direction: column; }
+    
+    /* Η πλαϊνή μπάρα βαθμολογίας αρχικά κρυφή */
+    .sidebar { width: 320px; background: #1e293b; border-left: 2px solid #334155; padding: 20px; display: none; flex-direction: column; }
     
     h1 { color: #60a5fa; margin: 0 0 10px 0; font-size: 2rem; }
     .code-box { background: #1e293b; padding: 10px 25px; border-radius: 12px; border: 2px solid #3b82f6; margin-bottom: 20px; font-size: 1.5rem; }
@@ -30,7 +32,6 @@
     .sidebar h2 { font-size: 1.3rem; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }
     .player-row { display: flex; justify-content: space-between; background: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
 
-    /* Στυλ για τον τελικό πίνακα αποτελεσμάτων */
     .game-over-card { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 600px; text-align: center; border: 2px solid #f59e0b; }
     .final-score-row { display: flex; justify-content: space-between; background: #334155; padding: 14px 20px; border-radius: 10px; margin-bottom: 10px; font-size: 1.3rem; align-items: center; }
   </style>
@@ -64,7 +65,6 @@
       </div>
     </div>
 
-    <!-- ΤΕΛΙΚΟΣ ΠΙΝΑΚΑΣ ΑΠΟΤΕΛΕΣΜΑΤΩΝ -->
     <div id="gameOverSection" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="game-over-card">
         <h2 style="color: #f59e0b; font-size: 2.2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
@@ -74,9 +74,10 @@
     </div>
   </div>
 
-  <div class="sidebar">
+  <!-- Πλαϊνή μπάρα (εμφανίζεται μόνο αφού ξεκινήσει το παιχνίδι) -->
+  <div id="sidebar" class="sidebar">
     <h2>🏆 Βαθμολογία</h2>
-    <div id="scoreboardList"><i style="color: #64748b;">Αναμονή παικτών...</i></div>
+    <div id="scoreboardList"></div>
   </div>
 
   <script>
@@ -99,7 +100,10 @@
       document.getElementById('gameOverSection').style.display = 'none';
       document.getElementById('questionSection').style.display = 'block';
       
-      document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum} από ${data.total} — Επίπεδο: ${data.levelName}`;
+      // Εμφάνιση του sidebar μόλις ξεκινήσει η πρώτη ερώτηση
+      document.getElementById('sidebar').style.display = 'flex';
+      
+      document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum}/${data.total} (${data.levelName}) — ⭐ ${data.points} πόντοι`;
       document.getElementById('qText').textContent = data.question;
       
       const imgEl = document.getElementById('qImage');
@@ -150,7 +154,9 @@
       document.getElementById('questionSection').style.display = 'none';
       document.getElementById('gameOverSection').style.display = 'flex';
       
-      // Γεμίζουμε τον μεγάλο πίνακα τελικών αποτελεσμάτων
+      // Κρύβουμε το sidebar στο τέλος αφού έχουμε τον μεγάλο πίνακα στη μέση
+      document.getElementById('sidebar').style.display = 'none';
+
       const finalContainer = document.getElementById('finalScoreboardList');
       finalContainer.innerHTML = '';
       
@@ -175,7 +181,7 @@
       listEl.innerHTML = '';
       playersList.sort((a, b) => b.score - a.score).forEach(p => {
         const row = document.createElement('div');
-        row.className = 'player-row';
+        row.className, row.className = 'player-row';
         row.innerHTML = `<span>${p.name} ${p.isHost ? '👑' : ''}</span> <strong>${p.score}</strong>`;
         listEl.appendChild(row);
       });

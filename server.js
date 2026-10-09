@@ -10,10 +10,23 @@ app.use(express.static(__dirname));
 
 const rooms = {};
 
-// ΣΕΙΡΑ ΕΡΩΤΗΣΕΩΝ (Από την πιο εύκολη στην πιο δύσκολη)
 const levelsOrder = ["90%", "80%", "70%", "60%", "50%", "40%", "30%", "20%", "10%", "5%", "1%"];
 
-// ΤΡΑΠΕΖΑ ΕΡΩΤΗΣΕΩΝ ΑΝΑ ΕΠΙΠΕΔΟ ΔΥΣΚΟΛΙΑΣ
+// Πόντοι ανάλογα με τη δυσκολία (όσο πιο δύσκολη η ερώτηση, τόσους περισσότερους πόντους δίνει!)
+const pointsPerLevel = {
+  "90%": 50,
+  "80%": 70,
+  "70%": 100,
+  "60%": 150,
+  "50%": 200,
+  "40%": 300,
+  "30%": 400,
+  "20%": 500,
+  "10%": 700,
+  "5%": 1000,
+  "1%": 2000 // Τεράστιο μπόνους για την τελική ανατροπή!
+};
+
 const questionsByLevel = {
   "90%": [
     {
@@ -92,7 +105,7 @@ const questionsByLevel = {
       question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Τ, Π, Ε, ...;",
       imageUrl: "",
       options: { A: "Σ", B: "Κ", C: "Ο", D: "Μ" },
-      correct: "A" // Δευτέρα, Τρίτη, Τετάρτη, Πέμπτη, Παρασκευή, Σάββατο...
+      correct: "A"
     }
   ],
   "1%": [
@@ -116,10 +129,9 @@ io.on('connection', (socket) => {
       autoAdvanceTimer: null,
       answersState: {},
       selectedQuestions: [],
-      usedQuestionsMap: {} // Ιστορικό χρησιμοποιημένων ερωτήσεων ανά επίπεδο
+      usedQuestionsMap: {}
     };
     
-    // Αρχικοποίηση ιστορικού για κάθε επίπεδο
     levelsOrder.forEach(lvl => {
       rooms[roomId].usedQuestionsMap[lvl] = [];
     });
@@ -154,35 +166,30 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     if (!room) return;
 
-    // Μηδενισμός σκορ
     for (let id in room.players) {
       room.players[id].score = 0;
     }
 
     room.selectedQuestions = [];
 
-    // Για κάθε επίπεδο δυσκολίας, επιλέγουμε ακριβώς 1 ερώτηση
     levelsOrder.forEach(lvl => {
       const qList = questionsByLevel[lvl] || [];
       if (qList.length === 0) return;
 
       let usedIndices = room.usedQuestionsMap[lvl] || [];
-
-      // Βρίσκουμε ποιες ερωτήσεις δεν έχουν παίξει ακόμα σε αυτό το επίπεδο
       let availableIndices = qList.map((_, idx) => idx).filter(idx => !usedIndices.includes(idx));
 
-      // Αν εξαντλήθηκαν οι ερωτήσεις του επιπέδου, μηδενίζουμε το ιστορικό του
       if (availableIndices.length === 0) {
         room.usedQuestionsMap[lvl] = [];
         availableIndices = qList.map((_, idx) => idx);
       }
 
-      // Επιλογή 1 τυχαίας ερώτησης για το επίπεδο
       const randomIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
       room.usedQuestionsMap[lvl].push(randomIdx);
 
       const qObj = qList[randomIdx];
-      qObj.levelName = lvl; // Προσθέτουμε την ετικέτα του επιπέδου
+      qObj.levelName = lvl;
+      qObj.points = pointsPerLevel[lvl] || 100; // Προσάψαμε τους πόντους στην ερώτηση
       room.selectedQuestions.push(qObj);
     });
 
@@ -206,6 +213,7 @@ io.on('connection', (socket) => {
         questionNum: room.currentQuestionIndex + 1,
         total: room.selectedQuestions.length,
         levelName: q.levelName,
+        points: q.points,
         question: q.question,
         imageUrl: q.imageUrl,
         options: q.options
@@ -228,7 +236,6 @@ io.on('connection', (socket) => {
             answersState: room.answersState
           });
 
-          // Αυτόματη αλλαγή ερώτησης μετά από 5 δευτερόλεπτα
           room.autoAdvanceTimer = setTimeout(() => {
             loadNextQuestion(roomId);
           }, 5000);
@@ -252,7 +259,8 @@ io.on('connection', (socket) => {
 
     if (player && !room.answersState[socket.id]) {
       const isCorrect = (answer === currentQ.correct);
-      if (isCorrect) player.score += 100;
+      // Προσθέτουμε τους πόντους ανάλογα με τη δυσκολία της ερώτησης
+      if (isCorrect) player.score += currentQ.points;
 
       room.answersState[socket.id] = {
         name: player.name,

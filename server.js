@@ -10,7 +10,7 @@ app.use(express.static(__dirname));
 
 const rooms = {};
 
-// ΕΔΩ ΜΠΟΡΕΙΣ ΝΑ ΒΑΛΕΙΣ ΕΚΑΤΟΝΤΑΔΕΣ ΕΡΩΤΗΣΕΙΣ!
+// Εδώ μπορείς να προσθέσεις όσες ερωτήσεις θες!
 const allGameQuestions = [
   {
     question: "Ερώτηση 1: Ποιος αριθμός κρύβεται στο ερωτηματικό;",
@@ -36,7 +36,6 @@ const allGameQuestions = [
     options: { A: "Τετάρτη", B: "Πέμπτη", C: "Παρασκευή", D: "Σάββατο" },
     correct: "D"
   }
-  // Μπορείς να προσθέσεις όσες ερωτήσεις θες εδώ με την ίδια δομή...
 ];
 
 io.on('connection', (socket) => {
@@ -47,9 +46,10 @@ io.on('connection', (socket) => {
       players: {}, 
       currentQuestionIndex: -1,
       timer: null,
+      autoAdvanceTimer: null,
       answersState: {},
       selectedQuestions: [],
-      usedQuestionIndices: [] // <--- Εδώ θυμόμαστε ποιες ερωτήσεις έχουν ήδη πέσει σε αυτό το δωμάτιο!
+      usedQuestionIndices: []
     };
     socket.join(roomId);
     socket.emit('room-created', roomId);
@@ -77,17 +77,14 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ΕΝΑΡΞΗ ΝΕΟΥ ΓΥΡΟΥ ΧΩΡΙΣ ΕΠΑΝΑΛΗΨΗ ΠΑΛΙΩΝ ΕΡΩΤΗΣΕΩΝ
   socket.on('start-game', (roomId) => {
     const room = rooms[roomId];
     if (!room) return;
 
-    // Μηδενισμός σκορ παικτών
     for (let id in room.players) {
       room.players[id].score = 0;
     }
 
-    // Βρίσκουμε ποιες ερωτήσεις ΔΕΝ έχουν χρησιμοποιηθεί ακόμα σε αυτό το session
     const availableIndices = [];
     for (let i = 0; i < allGameQuestions.length; i++) {
       if (!room.usedQuestionIndices.includes(i)) {
@@ -95,7 +92,6 @@ io.on('connection', (socket) => {
       }
     }
 
-    // Αν έχουν τελειώσει σχεδόν όλες οι ερωτήσεις της λίστας, μηδενίζουμε το ιστορικό για να ξαναρχίσουν από την αρχή
     if (availableIndices.length < 5) {
       room.usedQuestionIndices = [];
       for (let i = 0; i < allGameQuestions.length; i++) {
@@ -103,17 +99,11 @@ io.on('connection', (socket) => {
       }
     }
 
-    // Ανακατεύουμε τις διαθέσιμες ερωτήσεις τυχαία
     availableIndices.sort(() => 0.5 - Math.random());
-
-    // Παίρνουμε έως 15 (ή όσες απομένουν αν είναι λιγότερες)
     const countToPick = Math.min(15, availableIndices.length);
     const chosenIndices = availableIndices.slice(0, countToPick);
-
-    // Τις προσθέτουμε στο ιστορικό των χρησιμοποιημένων για να ΜΕΝ μην ξαναδεί ποτέ ούτε μία ίδια
     room.usedQuestionIndices.push(...chosenIndices);
 
-    // Δημιουργούμε τη λίστα των ερωτήσεων για αυτό το παιχνίδι
     room.selectedQuestions = chosenIndices.map(index => allGameQuestions[index]);
     room.currentQuestionIndex = -1;
 
@@ -127,6 +117,10 @@ io.on('connection', (socket) => {
   function loadNextQuestion(roomId) {
     const room = rooms[roomId];
     if (!room) return;
+
+    // Καθαρίζουμε τυχόν ενεργά χρονόμετρα προηγούμενου γύρου
+    clearInterval(room.timer);
+    clearTimeout(room.autoAdvanceTimer);
 
     room.currentQuestionIndex++;
     if (room.currentQuestionIndex < room.selectedQuestions.length) {
@@ -142,8 +136,6 @@ io.on('connection', (socket) => {
       });
 
       let timeLeft = 30;
-      clearInterval(room.timer);
-      
       room.timer = setInterval(() => {
         timeLeft--;
         io.to(roomId).emit('timer-update', timeLeft);
@@ -154,11 +146,17 @@ io.on('connection', (socket) => {
         if (timeLeft <= 0 || (totalPlayers > 0 && answeredCount >= totalPlayers)) {
           clearInterval(room.timer);
           
+          // Αποκαλύπτουμε απάντηση
           io.to(roomId).emit('reveal-answer', {
             correct: q.correct,
             playersList: Object.values(room.players),
             answersState: room.answersState
           });
+
+          // Αυτόματη μετάβαση στην επόμενη ερώτηση μετά από 5 δευτερόλεπτα
+          room.autoAdvanceTimer = setTimeout(() => {
+            loadNextQuestion(roomId);
+          }, 5000);
         }
       }, 1000);
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Controller</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 20px; margin: 0; }
+    input, button { width: 90%; max-width: 320px; padding: 16px; margin: 10px 0; font-size: 1.2rem; border-radius: 12px; border: none; box-sizing: border-box; }
+    input { background: #1e293b; color: white; border: 1px solid #475569; }
+    .btn-main { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; height: 65vh; }
+    .ans-btn { font-size: 2.5rem; font-weight: bold; color: white; border-radius: 16px; width: 100%; height: 100%; }
+    .red { background: #ef4444; } .blue { background: #3b82f6; }
+    .yellow { background: #f59e0b; } .green { background: #10b981; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="joinSection">
+    <h2>🎮 Είσοδος στο Παιχνίδι</h2>
+    <input type="text" id="playerName" placeholder="Το όνομά σου">
+    <input type="number" id="roomInput" placeholder="4-ψήφιος Κωδικός">
+    <br>
+    <button class="btn-main" onclick="joinGame()">Σύνδεση</button>
+  </div>
+
+  <div id="controllerSection" class="hidden">
+    <h3 id="welcomeMsg"></h3>
+    <div class="grid">
+      <button class="ans-btn red" onclick="sendAnswer('A')">A</button>
+      <button class="ans-btn blue" onclick="sendAnswer('B')">B</button>
+      <button class="ans-btn yellow" onclick="sendAnswer('C')">C</button>
+      <button class="ans-btn green" onclick="sendAnswer('D')">D</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+    let currentRoom = '';
+
+    function joinGame() {
+      const name = document.getElementById('playerName').value;
+      const room = document.getElementById('roomInput').value;
+
+      if (name && room) {
+        currentRoom = room;
+        socket.emit('join-room', { roomId: room, playerName: name });
+      }
+    }
+
+    socket.on('joined-successfully', (data) => {
+      document.getElementById('joinSection').classList.add('hidden');
+      document.getElementById('controllerSection').classList.remove('hidden');
+      document.getElementById('welcomeMsg').textContent = `Παίζεις ως: ${data.playerName}`;
+    });
+
+    socket.on('error-message', (msg) => alert(msg));
+
+    function sendAnswer(ans) {
+      socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
+    }
+  </script>
+</body>
+</html>

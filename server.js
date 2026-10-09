@@ -20,7 +20,7 @@ const pointsPerLevel = {
 const questionsByLevel = {
   "90%": [
 {
-    question: "[90%] "Ποια από τις τέσσετις μύτες δεν αναπνέει;" ,
+    question: "[90%] Ποια από τις τέσσετις μύτες δεν αναπνέει;" ,
     imageUrl: "",
     options: { 
       A: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10",

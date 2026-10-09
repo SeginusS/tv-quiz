@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
     if (rooms[roomId]) {
       socket.join(roomId);
       const playerIds = Object.keys(rooms[roomId].players);
-      const isHost = playerIds.length === 0; // Ο πρώτος παίκτης γίνεται host/διαχειριστής
+      const isHost = playerIds.length === 0;
 
       rooms[roomId].players[socket.id] = { 
         name: playerName, 
@@ -68,9 +68,8 @@ io.on('connection', (socket) => {
     room.currentQuestionIndex++;
     if (room.currentQuestionIndex < gameQuestions.length) {
       const q = gameQuestions[room.currentQuestionIndex];
-      room.answersState = {}; // Reset απαντήσεων γύρου
+      room.answersState = {};
 
-      // Ενημέρωση TV και κινητών για νέα ερώτηση
       io.to(roomId).emit('show-question', {
         questionNum: room.currentQuestionIndex + 1,
         total: gameQuestions.length,
@@ -79,16 +78,21 @@ io.on('connection', (socket) => {
         options: q.options
       });
 
-      // Χρονόμετρο 30 δευτερολέπτων
       let timeLeft = 30;
       clearInterval(room.timer);
+      
       room.timer = setInterval(() => {
         timeLeft--;
         io.to(roomId).emit('timer-update', timeLeft);
 
-        if (timeLeft <= 0) {
+        const totalPlayers = Object.keys(room.players).length;
+        const answeredCount = Object.keys(room.answersState).length;
+
+        // Αν τελειώσει ο χρόνος Ή απαντήσουν όλοι οι παίκτες νωρίτερα
+        if (timeLeft <= 0 || (totalPlayers > 0 && answeredCount >= totalPlayers)) {
           clearInterval(room.timer);
-          // Λήξη χρόνου: Αποκάλυψη σωστής απάντησης
+          
+          // Τώρα αποκαλύπτουμε τις απαντήσεις και τη σωστή λύση
           io.to(roomId).emit('reveal-answer', {
             correct: q.correct,
             playersList: Object.values(room.players),
@@ -116,6 +120,7 @@ io.on('connection', (socket) => {
       const isCorrect = (answer === currentQ.correct);
       if (isCorrect) player.score += 100;
 
+      // Αποθηκεύουμε την απάντηση κρυφά στον server
       room.answersState[socket.id] = {
         name: player.name,
         initial: player.name.charAt(0).toUpperCase(),
@@ -123,10 +128,8 @@ io.on('connection', (socket) => {
         isCorrect: isCorrect
       };
 
-      // Ενημέρωση TV για το ποιος απάντησε (χωρίς να αποκαλύψουμε αν είναι σωστός ακόμα)
-      io.to(room.hostSocket || roomId).emit('live-answers-update', {
-        answersState: room.answersState
-      });
+      // Ενημερώνουμε απλά το κινητό ότι καταγράφηκε (χωρίς να το δείξουμε στην TV ακόμα)
+      socket.emit('answer-locked');
     }
   });
 });

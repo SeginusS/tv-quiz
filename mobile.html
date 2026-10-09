@@ -30,12 +30,11 @@
   <div id="controllerSection" class="hidden">
     <h3 id="welcomeMsg"></h3>
     
-    <!-- Κουμπί Διαχειριστή (Host) αν είναι ο πρώτος παίκτης -->
     <div id="hostControls" class="hidden" style="margin-bottom: 20px;">
-      <button class="btn-main" style="background: #059669;" onclick="nextQuestion()">🚀 Έναρξη / Επόμενη Ερώτηση</button>
+      <button class="btn-main" style="background: #059669;" onclick="nextQuestion()">🚀 Επόμενη Ερώτηση</button>
     </div>
 
-    <p id="statusMsg">Περιμένετε την έναρξη του παιχνιδιού...</p>
+    <p id="statusMsg">Περιμένετε την έναρξη...</p>
     
     <div id="buttonsGrid" class="grid hidden">
       <button class="ans-btn red" onclick="sendAnswer('A')">A</button>
@@ -67,7 +66,7 @@
 
       if (data.isHost) {
         document.getElementById('hostControls').classList.remove('hidden');
-        document.getElementById('statusMsg').textContent = 'Εσείς είστε ο Διαχειριστής! Πατήστε το κουμπί για να ξεκινήσετε.';
+        document.getElementById('statusMsg').textContent = 'Εσείς είστε ο Διαχειριστής!';
       }
     });
 
@@ -88,13 +87,17 @@
       hasAnswered = true;
       
       socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
-      document.getElementById('statusMsg').textContent = `Καταγράφηκε η απάντηση: ${ans}`;
+      document.getElementById('statusMsg').textContent = `Η απάντησή σας (${ans}) κλειδώθηκε! 🤫 Περιμένετε τη λήξη του χρόνου...`;
       document.getElementById('buttonsGrid').classList.add('hidden');
     }
 
+    socket.on('answer-locked', () => {
+      // Επιβεβαίωση από server ότι καταγράφηκε
+    });
+
     socket.on('reveal-answer', () => {
       document.getElementById('buttonsGrid').classList.add('hidden');
-      document.getElementById('statusMsg').textContent = 'Ο χρόνος έληξε! Δείτε την οθόνη της τηλεόρασης.';
+      document.getElementById('statusMsg').textContent = 'Ο χρόνος έληξε! Δείτε τα αποτελέσματα στην τηλεόραση.';
     });
 
     socket.on('game-over', () => {

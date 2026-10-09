@@ -14,19 +14,19 @@
     .room-code { color: #f59e0b; font-weight: bold; letter-spacing: 2px; }
     
     .game-card { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 700px; box-sizing: border-box; }
-    .question-img { display: block; max-width: 100%; max-height: 220px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #475569; }
+    .question-img { display: block; max-width: 100%; max-height: 200px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #475569; }
     
     .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
     .option { background: #334155; padding: 12px; border-radius: 10px; font-size: 1.1rem; position: relative; min-height: 50px; display: flex; align-items: center; justify-content: space-between; }
     .correct-ans { background: #059669 !important; border: 2px solid #34d399; }
     
-    /* Κυκλάκια με αρχικά παικτών πάνω στις απαντήσεις */
     .avatars-container { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
     .player-bubble { width: 32px; height: 32px; background: #3b82f6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-    .timer { font-size: 2rem; color: #f59e0b; font-weight: bold; margin-bottom: 10px; }
-    
-    /* Sidebar Scores */
+    .timer-container { width: 100%; max-width: 700px; background: #334155; height: 12px; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
+    .timer-bar { width: 100%; height: 100%; background: #f59e0b; transition: width 1s linear; }
+    .timer-text { font-size: 1.5rem; color: #f59e0b; font-weight: bold; margin-bottom: 5px; }
+
     .sidebar h2 { font-size: 1.3rem; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }
     .player-row { display: flex; justify-content: space-between; background: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
   </style>
@@ -38,16 +38,18 @@
     
     <div id="lobbySection" style="text-align: center;">
       <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
-      <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί από το κινητό του γίνεται ο διαχειριστής του παιχνιδιού!</p>
+      <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί από το κινητό του γίνεται ο διαχειριστής!</p>
     </div>
 
     <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center;">
-      <div id="timerDisplay" class="timer">⏳ 30s</div>
-      <h2 id="qTitle" style="margin: 5px 0; font-size: 1.3rem; color: #94a3b8;">Ερώτηση</h2>
+      <div id="timerText" class="timer-text">30</div>
+      <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
+      
+      <h2 id="qTitle" style="margin: 5px 0; font-size: 1.2rem; color: #94a3b8;">Ερώτηση</h2>
       
       <div class="game-card">
         <img id="qImage" class="question-img" src="" alt="" style="display:none;">
-        <h3 id="qText" style="font-size: 1.4rem; margin-top: 0;"></h3>
+        <h3 id="qText" style="font-size: 1.3rem; margin-top: 0;"></h3>
         
         <div class="options-grid">
           <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
@@ -59,12 +61,9 @@
     </div>
   </div>
 
-  <!-- Δεξιά Στήλη: Scoreboard -->
   <div class="sidebar">
     <h2>🏆 Βαθμολογία</h2>
-    <div id="scoreboardList">
-      <i style="color: #64748b;">Αναμονή παικτών...</i>
-    </div>
+    <div id="scoreboardList"><i style="color: #64748b;">Αναμονή παικτών...</i></div>
   </div>
 
   <script>
@@ -102,22 +101,28 @@
       document.getElementById('optC').querySelector('span').textContent = `C: ${data.options.C}`;
       document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
 
-      // Καθαρισμός χρωμάτων και avatars
+      // Καθαρισμός χρωμάτων και avatars για να μην φαίνεται τίποτα κατά τη διάρκεια σκέψης
       ['A', 'B', 'C', 'D'].forEach(opt => {
         document.getElementById(`opt${opt}`).classList.remove('correct-ans');
         document.getElementById(`avatars${opt}`).innerHTML = '';
       });
+
+      // Επαναφορά μπάρας χρονομέτρου
+      document.getElementById('timerBar').style.width = '100%';
     });
 
     socket.on('timer-update', (timeLeft) => {
-      document.getElementById('timerDisplay').textContent = `⏳ ${timeLeft}s`;
+      document.getElementById('timerText').textContent = timeLeft;
+      const percentage = (timeLeft / 30) * 100;
+      document.getElementById('timerBar').style.width = percentage + '%';
     });
 
-    socket.on('live-answers-update', (data) => {
-      // Καθαρίζουμε τα avatars
-      ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`avatars${opt}`).innerHTML = '');
+    // ΟΙ ΑΠΑΝΤΗΣΕΙΣ ΚΑΙ ΤΑ ΑVATARS ΕΜΦΑΝΙΖΟΝΤΑΙ ΜΟΝΟ ΕΔΩ (ΟΤΑΝ ΤΕΛΕΙΩΣΕΙ Ο ΧΡΟΝΟΣ)
+    socket.on('reveal-answer', (data) => {
+      // 1. Φωτίζουμε τη σωστή απάντηση πράσινη
+      document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
 
-      // Τοποθετούμε το κάθε κυκλάκι πάνω στην απάντηση που επέλεξε ο παίκτης
+      // 2. Τοποθετούμε τα κυκλάκια των παικτών πάνω στις επιλογές τους
       for (let id in data.answersState) {
         const ansObj = data.answersState[id];
         const bubble = document.createElement('div');
@@ -128,11 +133,7 @@
         const container = document.getElementById(`avatars${ansObj.answer}`);
         if (container) container.appendChild(bubble);
       }
-    });
 
-    socket.on('reveal-answer', (data) => {
-      // Φωτίζουμε τη σωστή απάντηση πράσινη
-      document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
       updateScoreboard(data.playersList);
     });
 

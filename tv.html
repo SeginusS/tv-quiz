@@ -132,10 +132,45 @@
         imgEl.style.display = 'none';
       }
 
-      document.getElementById('optA').querySelector('span').textContent = `A: ${data.options.A}`;
-      document.getElementById('optB').querySelector('span').textContent = `B: ${data.options.B}`;
-      document.getElementById('optC').querySelector('span').textContent = `C: ${data.options.C}`;
-      document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
+function setOptionContent(optLetter, optData) {
+        const optElement = document.getElementById(`opt${optLetter}`);
+        let imgTag = optElement.querySelector('.opt-img');
+        let spanTag = optElement.querySelector('span');
+
+        let isImage = false;
+        let contentVal = '';
+
+        if (typeof optData === 'object' && optData !== null) {
+          isImage = (optData.type === 'image');
+          contentVal = optData.value;
+        } else {
+          contentVal = optData;
+          if (typeof contentVal === 'string' && (contentVal.startsWith('http://') || contentVal.startsWith('https://'))) {
+            isImage = true;
+          }
+        }
+
+        if (isImage) {
+          spanTag.style.display = 'none';
+          if (!imgTag) {
+            imgTag = document.createElement('img');
+            imgTag.className = 'opt-img';
+            imgTag.style.cssText = 'max-height: 80px; max-width: 100%; border-radius: 6px; object-fit: contain; margin: 0 auto; display: block;';
+            optElement.insertBefore(imgTag, optElement.firstChild);
+          }
+          imgTag.src = contentVal;
+          imgTag.style.display = 'block';
+        } else {
+          spanTag.style.display = 'block';
+          spanTag.textContent = `${optLetter}: ${contentVal}`;
+          if (imgTag) imgTag.style.display = 'none';
+        }
+      }
+
+      setOptionContent('A', data.options.A);
+      setOptionContent('B', data.options.B);
+      setOptionContent('C', data.options.C);
+      setOptionContent('D', data.options.D);
 
       ['A', 'B', 'C', 'D'].forEach(opt => {
         document.getElementById(`opt${opt}`).classList.remove('correct-ans');

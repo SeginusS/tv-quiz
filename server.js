@@ -23,10 +23,10 @@ const questionsByLevel = {
     question: "[90%] Ποια από τις τέσσετις μύτες δεν αναπνέει;" ,
     imageUrl: "",
     options: { 
-      A: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10",
-      B: "https://thumbs.dreamstime.com/b/none-188018600.jpg", 
-      C: "https://www.tanea.gr/wp-content/uploads/2011/04/pig.jpg",             // Αν είναι απλό κείμενο, θα δείξει κανονικά το κείμενο
-      D: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10" 
+      A: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10",
+      B: { type: "image", value: "https://thumbs.dreamstime.com/b/none-188018600.jpg", 
+      C: { type: "image", value: "https://www.tanea.gr/wp-content/uploads/2011/04/pig.jpg",             // Αν είναι απλό κείμενο, θα δείξει κανονικά το κείμενο
+      D: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10" 
     },
     correct: "D"
   }

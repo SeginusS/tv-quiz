@@ -29,6 +29,10 @@
 
     .sidebar h2 { font-size: 1.3rem; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }
     .player-row { display: flex; justify-content: space-between; background: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
+
+    /* Στυλ για τον τελικό πίνακα αποτελεσμάτων */
+    .game-over-card { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 600px; text-align: center; border: 2px solid #f59e0b; }
+    .final-score-row { display: flex; justify-content: space-between; background: #334155; padding: 14px 20px; border-radius: 10px; margin-bottom: 10px; font-size: 1.3rem; align-items: center; }
   </style>
 </head>
 <body>
@@ -60,9 +64,13 @@
       </div>
     </div>
 
-    <div id="gameOverSection" style="display:none; text-align: center;">
-      <h2>🏆 Τέλος Παιχνιδιού!</h2>
-      <p style="font-size: 1.4rem; color: #38bdf8;">Ο διαχειριστής μπορεί να πατήσει "Παίξε Ξανά" από το κινητό του!</p>
+    <!-- ΤΕΛΙΚΟΣ ΠΙΝΑΚΑΣ ΑΠΟΤΕΛΕΣΜΑΤΩΝ -->
+    <div id="gameOverSection" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <div class="game-over-card">
+        <h2 style="color: #f59e0b; font-size: 2.2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
+        <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 20px;">Ο διαχειριστής μπορεί να πατήσει "Παίξε Ξανά" από το κινητό του!</p>
+        <div id="finalScoreboardList"></div>
+      </div>
     </div>
   </div>
 
@@ -91,7 +99,7 @@
       document.getElementById('gameOverSection').style.display = 'none';
       document.getElementById('questionSection').style.display = 'block';
       
-      document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum} από ${data.total}`;
+      document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum} από ${data.total} — Επίπεδο: ${data.levelName}`;
       document.getElementById('qText').textContent = data.question;
       
       const imgEl = document.getElementById('qImage');
@@ -108,52 +116,4 @@
       document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
 
       ['A', 'B', 'C', 'D'].forEach(opt => {
-        document.getElementById(`opt${opt}`).classList.remove('correct-ans');
-        document.getElementById(`avatars${opt}`).innerHTML = '';
-      });
-
-      document.getElementById('timerBar').style.width = '100%';
-    });
-
-    socket.on('timer-update', (timeLeft) => {
-      document.getElementById('timerText').textContent = timeLeft;
-      const percentage = (timeLeft / 30) * 100;
-      document.getElementById('timerBar').style.width = percentage + '%';
-    });
-
-    socket.on('reveal-answer', (data) => {
-      document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
-
-      for (let id in data.answersState) {
-        const ansObj = data.answersState[id];
-        const bubble = document.createElement('div');
-        bubble.className = 'player-bubble';
-        bubble.textContent = ansObj.initial;
-        bubble.title = ansObj.name;
-
-        const container = document.getElementById(`avatars${ansObj.answer}`);
-        if (container) container.appendChild(bubble);
-      }
-
-      updateScoreboard(data.playersList);
-    });
-
-    socket.on('game-over', (data) => {
-      document.getElementById('questionSection').style.display = 'none';
-      document.getElementById('gameOverSection').style.display = 'block';
-      updateScoreboard(data.playersList);
-    });
-
-    function updateScoreboard(playersList) {
-      const listEl = document.getElementById('scoreboardList');
-      listEl.innerHTML = '';
-      playersList.sort((a, b) => b.score - a.score).forEach(p => {
-        const row = document.createElement('div');
-        row.className = 'player-row';
-        row.innerHTML = `<span>${p.name} ${p.isHost ? '👑' : ''}</span> <strong>${p.score}</strong>`;
-        listEl.appendChild(row);
-      });
-    }
-  </script>
-</body>
-</html>
+        document.getElementById(`opt${opt}`).classList.

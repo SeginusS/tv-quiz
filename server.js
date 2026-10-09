@@ -34,14 +34,15 @@ const questionsByLevel = {
   ],
 
   "80%": [
-{ 
-    question: "[80%] Ποιος θα ήταν αδύνατο να παραμείνει στην θέση που φωτογραφήθηκε για παραπάνω από 1 δευτερόλεπτο;" , imageUrl: "", options: { 
-      A: { type: "image", value: "https://lh3.googleusercontent.com/d/1aerxga6oUgIm8gEizsH1RzZlcGQsawGq"},
-      B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GRqDLrV6oH4iMiDsD0OJ-JvQN0gvCrM5"}, 
-      C: { type: "image", value: "https://lh3.googleusercontent.com/d/1pWlajznw-vwhVJCNLIEnGEYTA80X6rvZ"},
-      D: { type: "image", value: "https://lh3.googleusercontent.com/d/1Qn2Ed6_5f75u4G90FPBwWt0LZYCrXrJK"} 
-    },
-    correct: "D"
+      {
+          question: "[80%] Ποιος θα ήταν αδύνατο να παραμείνει στην θέση που φωτογραφήθηκε για παραπάνω από 1 δευτερόλεπτο;", imageUrl: "", options: {
+              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1aerxga6oUgIm8gEizsH1RzZlcGQsawGq" },
+              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GRqDLrV6oH4iMiDsD0OJ-JvQN0gvCrM5" },
+              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1pWlajznw-vwhVJCNLIEnGEYTA80X6rvZ" },
+              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1Qn2Ed6_5f75u4G90FPBwWt0LZYCrXrJK" }
+          },
+          correct: "D"
+      }
   ],
 
   "70%": [

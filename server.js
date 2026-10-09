@@ -32,8 +32,10 @@ const questionsByLevel = {
   }
 
   ],
+
   "80%": [
-    { question: "[80%] Ποιος θα ήταν αδύνατο να παραμείνει στην θέση που φωτογραφήθηκε για παραπάνω από 1 δευτερόλεπτο;", imageUrl: "", options: { 
+{ 
+    question: "[80%] Ποιος θα ήταν αδύνατο να παραμείνει στην θέση που φωτογραφήθηκε για παραπάνω από 1 δευτερόλεπτο;" , imageUrl: "", options: { 
       A: { type: "image", value: "https://lh3.googleusercontent.com/d/1aerxga6oUgIm8gEizsH1RzZlcGQsawGq"},
       B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GRqDLrV6oH4iMiDsD0OJ-JvQN0gvCrM5"}, 
       C: { type: "image", value: "https://lh3.googleusercontent.com/d/1pWlajznw-vwhVJCNLIEnGEYTA80X6rvZ"},
@@ -41,6 +43,7 @@ const questionsByLevel = {
     },
     correct: "D"
   ],
+
   "70%": [
     { question: "[70%] Ποιος αριθμός συμπληρώνει τη σειρά: 3, 6, 12, 24, ?;", imageUrl: "", options: { A: "30", B: "36", C: "48", D: "60" }, correct: "C" }
   ],

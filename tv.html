@@ -2,51 +2,69 @@
 <html lang="el">
 <head>
   <meta charset="UTF-8">
-  <title>TV Quiz - 1% Club Style</title>
+  <title>Το Κλαμπ του 1% - TV</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    body { font-family: system-ui, sans-serif; background: #111827; color: #fff; text-align: center; padding: 30px; margin: 0; }
-    h1 { color: #60a5fa; margin-bottom: 5px; }
-    .code-box { background: #1f2937; display: inline-block; padding: 10px 30px; border-radius: 12px; border: 2px solid #3b82f6; margin: 10px 0; }
-    .room-code { font-size: 3rem; color: #f59e0b; font-weight: bold; letter-spacing: 3px; }
-    .game-area { margin-top: 15px; background: #1f2937; padding: 25px; border-radius: 16px; display: inline-block; width: 80%; max-width: 700px; text-align: left; }
-    .question-img { display: block; max-width: 100%; max-height: 280px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #4b5563; }
-    .option { background: #374151; padding: 10px; margin: 6px 0; border-radius: 8px; font-size: 1.1rem; }
-    .correct { background: #059669 !important; }
-    button { background: #2563eb; color: white; border: none; padding: 12px 24px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-    .players { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
-    .card { background: #374151; padding: 8px 16px; border-radius: 8px; font-size: 1.1rem; }
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+    .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .sidebar { width: 320px; background: #1e293b; border-left: 2px solid #334155; padding: 20px; display: flex; flex-direction: column; }
+    
+    h1 { color: #60a5fa; margin: 0 0 10px 0; font-size: 2rem; }
+    .code-box { background: #1e293b; padding: 10px 25px; border-radius: 12px; border: 2px solid #3b82f6; margin-bottom: 20px; font-size: 1.5rem; }
+    .room-code { color: #f59e0b; font-weight: bold; letter-spacing: 2px; }
+    
+    .game-card { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 700px; box-sizing: border-box; }
+    .question-img { display: block; max-width: 100%; max-height: 220px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #475569; }
+    
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+    .option { background: #334155; padding: 12px; border-radius: 10px; font-size: 1.1rem; position: relative; min-height: 50px; display: flex; align-items: center; justify-content: space-between; }
+    .correct-ans { background: #059669 !important; border: 2px solid #34d399; }
+    
+    /* Κυκλάκια με αρχικά παικτών πάνω στις απαντήσεις */
+    .avatars-container { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .player-bubble { width: 32px; height: 32px; background: #3b82f6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+    .timer { font-size: 2rem; color: #f59e0b; font-weight: bold; margin-bottom: 10px; }
+    
+    /* Sidebar Scores */
+    .sidebar h2 { font-size: 1.3rem; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+    .player-row { display: flex; justify-content: space-between; background: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
   </style>
 </head>
 <body>
-  <h1>📺 Το Κλαμπ του 1% - Host</h1>
-  <div id="lobbySection">
-    <div class="code-box">
-      <div style="color: #9ca3af; font-size: 1rem;">Κωδικός Δωματίου:</div>
-      <div id="roomCode" class="room-code">----</div>
+
+  <div class="main-content">
+    <h1>📺 Το Κλαμπ του 1%</h1>
+    
+    <div id="lobbySection" style="text-align: center;">
+      <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
+      <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί από το κινητό του γίνεται ο διαχειριστής του παιχνιδιού!</p>
     </div>
-    <h2>👥 Συνδεδεμένοι Παίκτες:</h2>
-    <div id="playersList" class="players"><i>Αναμονή για παίκτες...</i></div>
-    <br><br>
-    <button onclick="nextQuestion()">🚀 Έναρξη Παιχνιδιού</button>
+
+    <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center;">
+      <div id="timerDisplay" class="timer">⏳ 30s</div>
+      <h2 id="qTitle" style="margin: 5px 0; font-size: 1.3rem; color: #94a3b8;">Ερώτηση</h2>
+      
+      <div class="game-card">
+        <img id="qImage" class="question-img" src="" alt="" style="display:none;">
+        <h3 id="qText" style="font-size: 1.4rem; margin-top: 0;"></h3>
+        
+        <div class="options-grid">
+          <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
+          <div id="optB" class="option"><span>B: ...</span><div class="avatars-container" id="avatarsB"></div></div>
+          <div id="optC" class="option"><span>C: ...</span><div class="avatars-container" id="avatarsC"></div></div>
+          <div id="optD" class="option"><span>D: ...</span><div class="avatars-container" id="avatarsD"></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="questionSection" style="display:none;">
-    <h2 id="qTitle" style="margin: 5px 0;">Ερώτηση</h2>
-    <div class="game-area">
-      <!-- Εδώ εμφανίζεται η εικόνα της ερώτησης -->
-      <img id="qImage" class="question-img" src="" alt="Εικόνα Ερώτησης">
-      
-      <h3 id="qText" style="font-size: 1.5rem; margin-top: 0;"></h3>
-      <div id="optA" class="option">A: ...</div>
-      <div id="optB" class="option">B: ...</div>
-      <div id="optC" class="option">C: ...</div>
-      <div id="optD" class="option">D: ...</div>
+  <!-- Δεξιά Στήλη: Scoreboard -->
+  <div class="sidebar">
+    <h2>🏆 Βαθμολογία</h2>
+    <div id="scoreboardList">
+      <i style="color: #64748b;">Αναμονή παικτών...</i>
     </div>
-    <br>
-    <button onclick="nextQuestion()">Επόμενη Ερώτηση ➡️</button>
-    <h3 style="margin-top:15px; font-size: 1.1rem;">Καταγραφές απαντήσεων:</h3>
-    <div id="answersLog" style="color: #34d399; font-size: 1.1rem;"></div>
   </div>
 
   <script>
@@ -60,20 +78,9 @@
       document.getElementById('roomCode').textContent = id;
     });
 
-    socket.on('player-joined', (data) => {
-      const list = document.getElementById('playersList');
-      list.innerHTML = '';
-      data.playersList.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.textContent = `${p.name} (${p.score} πόντοι)`;
-        list.appendChild(div);
-      });
+    socket.on('update-players', (data) => {
+      updateScoreboard(data.playersList);
     });
-
-    function nextQuestion() {
-      socket.emit('next-question', currentRoom);
-    }
 
     socket.on('show-question', (data) => {
       document.getElementById('lobbySection').style.display = 'none';
@@ -82,7 +89,6 @@
       document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum} από ${data.total}`;
       document.getElementById('qText').textContent = data.question;
       
-      // Διαχείριση εικόνας (αν υπάρχει την δείχνει, αλλιώς την κρύβει)
       const imgEl = document.getElementById('qImage');
       if (data.imageUrl) {
         imgEl.src = data.imageUrl;
@@ -91,40 +97,60 @@
         imgEl.style.display = 'none';
       }
 
-      document.getElementById('optA').textContent = `A: ${data.options.A}`;
-      document.getElementById('optB').textContent = `B: ${data.options.B}`;
-      document.getElementById('optC').textContent = `C: ${data.options.C}`;
-      document.getElementById('optD').textContent = `D: ${data.options.D}`;
+      document.getElementById('optA').querySelector('span').textContent = `A: ${data.options.A}`;
+      document.getElementById('optB').querySelector('span').textContent = `B: ${data.options.B}`;
+      document.getElementById('optC').querySelector('span').textContent = `C: ${data.options.C}`;
+      document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
 
+      // Καθαρισμός χρωμάτων και avatars
       ['A', 'B', 'C', 'D'].forEach(opt => {
-        document.getElementById(`opt${opt}`).classList.remove('correct');
-      });
-
-      document.getElementById(`opt${data.correct}`).classList.add('correct');
-      document.getElementById('answersLog').innerHTML = '';
-    });
-
-    socket.on('player-answered', (data) => {
-      const log = document.getElementById('answersLog');
-      const status = data.isCorrect ? '✅ Σωστά!' : '❌ Λάθος!';
-      const p = document.createElement('p');
-      p.style.margin = '4px 0';
-      p.textContent = `Ο/Η ${data.playerName} απάντησε ${data.answer} -> ${status}`;
-      log.appendChild(p);
-
-      const list = document.getElementById('playersList');
-      list.innerHTML = '';
-      data.playersList.forEach(pl => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.textContent = `${pl.name} (${pl.score} πόντοι)`;
-        list.appendChild(div);
+        document.getElementById(`opt${opt}`).classList.remove('correct-ans');
+        document.getElementById(`avatars${opt}`).innerHTML = '';
       });
     });
 
-    socket.on('game-over', () => {
-      document.getElementById('questionSection').innerHTML = '<h2>🏆 Τέλος Παιχνιδιού! Νικητές και ηττημένοι τα πήγαν περίφημα!</h2>';
+    socket.on('timer-update', (timeLeft) => {
+      document.getElementById('timerDisplay').textContent = `⏳ ${timeLeft}s`;
     });
+
+    socket.on('live-answers-update', (data) => {
+      // Καθαρίζουμε τα avatars
+      ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`avatars${opt}`).innerHTML = '');
+
+      // Τοποθετούμε το κάθε κυκλάκι πάνω στην απάντηση που επέλεξε ο παίκτης
+      for (let id in data.answersState) {
+        const ansObj = data.answersState[id];
+        const bubble = document.createElement('div');
+        bubble.className = 'player-bubble';
+        bubble.textContent = ansObj.initial;
+        bubble.title = ansObj.name;
+
+        const container = document.getElementById(`avatars${ansObj.answer}`);
+        if (container) container.appendChild(bubble);
+      }
+    });
+
+    socket.on('reveal-answer', (data) => {
+      // Φωτίζουμε τη σωστή απάντηση πράσινη
+      document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
+      updateScoreboard(data.playersList);
+    });
+
+    socket.on('game-over', (data) => {
+      document.getElementById('questionSection').innerHTML = '<h2>🏆 Τέλος Παιχνιδιού!</h2>';
+      updateScoreboard(data.playersList);
+    });
+
+    function updateScoreboard(playersList) {
+      const listEl = document.getElementById('scoreboardList');
+      listEl.innerHTML = '';
+      playersList.sort((a, b) => b.score - a.score).forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'player-row';
+        row.innerHTML = `<span>${p.name} ${p.isHost ? '👑' : ''}</span> <strong>${p.score}</strong>`;
+        listEl.appendChild(row);
+      });
+    }
   </script>
 </body>
 </html>

@@ -7,9 +7,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(__dirname));
+
 const rooms = {};
 
-// Ερωτήσεις τύπου 1% Club με εικόνες!
 const gameQuestions = [
   {
     question: "Ποιος αριθμός κρύβεται στο ερωτηματικό;",
@@ -28,7 +28,13 @@ const gameQuestions = [
 io.on('connection', (socket) => {
   socket.on('create-room', () => {
     const roomId = Math.floor(1000 + Math.random() * 9000).toString();
-    rooms[roomId] = { hostSocket: socket.id, players: {}, currentQuestionIndex: -1 };
+    rooms[roomId] = { 
+      hostSocket: socket.id, 
+      players: {}, 
+      currentQuestionIndex: -1,
+      timer: null,
+      answersState: {} 
+    };
     socket.join(roomId);
     socket.emit('room-created', roomId);
   });
@@ -36,13 +42,20 @@ io.on('connection', (socket) => {
   socket.on('join-room', ({ roomId, playerName }) => {
     if (rooms[roomId]) {
       socket.join(roomId);
-      rooms[roomId].players[socket.id] = { name: playerName, score: 0 };
+      const playerIds = Object.keys(rooms[roomId].players);
+      const isHost = playerIds.length === 0; // Ο πρώτος παίκτης γίνεται host/διαχειριστής
+
+      rooms[roomId].players[socket.id] = { 
+        name: playerName, 
+        score: 0, 
+        isHost: isHost 
+      };
       
-      io.to(rooms[roomId].hostSocket).emit('player-joined', {
+      io.to(roomId).emit('update-players', {
         playersList: Object.values(rooms[roomId].players)
       });
 
-      socket.emit('joined-successfully', { roomId, playerName });
+      socket.emit('joined-successfully', { roomId, playerName, isHost });
     } else {
       socket.emit('error-message', 'Το δωμάτιο δεν βρέθηκε!');
     }
@@ -55,23 +68,39 @@ io.on('connection', (socket) => {
     room.currentQuestionIndex++;
     if (room.currentQuestionIndex < gameQuestions.length) {
       const q = gameQuestions[room.currentQuestionIndex];
-      
-      // Στέλνουμε την ερώτηση και την εικόνα στην TV
-      io.to(room.hostSocket).emit('show-question', {
+      room.answersState = {}; // Reset απαντήσεων γύρου
+
+      // Ενημέρωση TV και κινητών για νέα ερώτηση
+      io.to(roomId).emit('show-question', {
         questionNum: room.currentQuestionIndex + 1,
         total: gameQuestions.length,
         question: q.question,
         imageUrl: q.imageUrl,
-        options: q.options,
-        correct: q.correct
+        options: q.options
       });
 
-      // Στέλνουμε μόνο την ερώτηση στα κινητά (χωρίς απαντήσεις/εικόνες)
-      io.to(roomId).emit('player-question', {
-        question: q.question
-      });
+      // Χρονόμετρο 30 δευτερολέπτων
+      let timeLeft = 30;
+      clearInterval(room.timer);
+      room.timer = setInterval(() => {
+        timeLeft--;
+        io.to(roomId).emit('timer-update', timeLeft);
+
+        if (timeLeft <= 0) {
+          clearInterval(room.timer);
+          // Λήξη χρόνου: Αποκάλυψη σωστής απάντησης
+          io.to(roomId).emit('reveal-answer', {
+            correct: q.correct,
+            playersList: Object.values(room.players),
+            answersState: room.answersState
+          });
+        }
+      }, 1000);
+
     } else {
-      io.to(roomId).emit('game-over');
+      io.to(roomId).emit('game-over', {
+        playersList: Object.values(room.players)
+      });
     }
   });
 
@@ -83,15 +112,20 @@ io.on('connection', (socket) => {
     const currentQ = gameQuestions[qIndex];
     const player = room.players[socket.id];
 
-    if (player) {
+    if (player && !room.answersState[socket.id]) {
       const isCorrect = (answer === currentQ.correct);
       if (isCorrect) player.score += 100;
 
-      io.to(room.hostSocket).emit('player-answered', {
-        playerName: player.name,
+      room.answersState[socket.id] = {
+        name: player.name,
+        initial: player.name.charAt(0).toUpperCase(),
         answer: answer,
-        isCorrect: isCorrect,
-        playersList: Object.values(room.players)
+        isCorrect: isCorrect
+      };
+
+      // Ενημέρωση TV για το ποιος απάντησε (χωρίς να αποκαλύψουμε αν είναι σωστός ακόμα)
+      io.to(room.hostSocket || roomId).emit('live-answers-update', {
+        answersState: room.answersState
       });
     }
   });

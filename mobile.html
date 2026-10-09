@@ -10,8 +10,8 @@
     input, button { width: 90%; max-width: 320px; padding: 16px; margin: 10px 0; font-size: 1.2rem; border-radius: 12px; border: none; box-sizing: border-box; }
     input { background: #1e293b; color: white; border: 1px solid #475569; }
     .btn-main { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; height: 65vh; }
-    .ans-btn { font-size: 2.5rem; font-weight: bold; color: white; border-radius: 16px; width: 100%; height: 100%; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; height: 50vh; }
+    .ans-btn { font-size: 2.5rem; font-weight: bold; color: white; border-radius: 16px; width: 100%; height: 100%; border: none; cursor: pointer; }
     .red { background: #ef4444; } .blue { background: #3b82f6; }
     .yellow { background: #f59e0b; } .green { background: #10b981; }
     .hidden { display: none; }
@@ -29,7 +29,15 @@
 
   <div id="controllerSection" class="hidden">
     <h3 id="welcomeMsg"></h3>
-    <div class="grid">
+    
+    <!-- Κουμπί Διαχειριστή (Host) αν είναι ο πρώτος παίκτης -->
+    <div id="hostControls" class="hidden" style="margin-bottom: 20px;">
+      <button class="btn-main" style="background: #059669;" onclick="nextQuestion()">🚀 Έναρξη / Επόμενη Ερώτηση</button>
+    </div>
+
+    <p id="statusMsg">Περιμένετε την έναρξη του παιχνιδιού...</p>
+    
+    <div id="buttonsGrid" class="grid hidden">
       <button class="ans-btn red" onclick="sendAnswer('A')">A</button>
       <button class="ans-btn blue" onclick="sendAnswer('B')">B</button>
       <button class="ans-btn yellow" onclick="sendAnswer('C')">C</button>
@@ -40,6 +48,7 @@
   <script>
     const socket = io();
     let currentRoom = '';
+    let hasAnswered = false;
 
     function joinGame() {
       const name = document.getElementById('playerName').value;
@@ -55,13 +64,42 @@
       document.getElementById('joinSection').classList.add('hidden');
       document.getElementById('controllerSection').classList.remove('hidden');
       document.getElementById('welcomeMsg').textContent = `Παίζεις ως: ${data.playerName}`;
+
+      if (data.isHost) {
+        document.getElementById('hostControls').classList.remove('hidden');
+        document.getElementById('statusMsg').textContent = 'Εσείς είστε ο Διαχειριστής! Πατήστε το κουμπί για να ξεκινήσετε.';
+      }
     });
 
     socket.on('error-message', (msg) => alert(msg));
 
-    function sendAnswer(ans) {
-      socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
+    function nextQuestion() {
+      socket.emit('next-question', currentRoom);
     }
+
+    socket.on('show-question', () => {
+      hasAnswered = false;
+      document.getElementById('statusMsg').textContent = 'Επιλέξτε απάντηση (30 δευτερόλεπτα)!';
+      document.getElementById('buttonsGrid').classList.remove('hidden');
+    });
+
+    function sendAnswer(ans) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+      
+      socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
+      document.getElementById('statusMsg').textContent = `Καταγράφηκε η απάντηση: ${ans}`;
+      document.getElementById('buttonsGrid').classList.add('hidden');
+    }
+
+    socket.on('reveal-answer', () => {
+      document.getElementById('buttonsGrid').classList.add('hidden');
+      document.getElementById('statusMsg').textContent = 'Ο χρόνος έληξε! Δείτε την οθόνη της τηλεόρασης.';
+    });
+
+    socket.on('game-over', () => {
+      document.getElementById('controllerSection').innerHTML = '<h2>🏆 Το παιχνίδι τελείωσε!</h2>';
+    });
   </script>
 </body>
 </html>

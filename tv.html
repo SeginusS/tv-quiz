@@ -8,13 +8,17 @@
     body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
     .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
     
-    /* Η πλαϊνή μπάρα βαθμολογίας αρχικά κρυφή */
     .sidebar { width: 320px; background: #1e293b; border-left: 2px solid #334155; padding: 20px; display: none; flex-direction: column; }
     
     h1 { color: #60a5fa; margin: 0 0 10px 0; font-size: 2rem; }
     .code-box { background: #1e293b; padding: 10px 25px; border-radius: 12px; border: 2px solid #3b82f6; margin-bottom: 20px; font-size: 1.5rem; }
     .room-code { color: #f59e0b; font-weight: bold; letter-spacing: 2px; }
     
+    /* Λίστα παικτών στο Lobby */
+    .lobby-players-box { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 500px; margin-top: 20px; border: 2px solid #334155; text-align: center; }
+    .connected-players-list { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
+    .player-tag { background: #334155; padding: 8px 16px; border-radius: 20px; font-size: 1.1rem; border: 1px solid #475569; }
+
     .game-card { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 700px; box-sizing: border-box; }
     .question-img { display: block; max-width: 100%; max-height: 200px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #475569; }
     
@@ -41,11 +45,20 @@
   <div class="main-content">
     <h1>📺 Το Κλαμπ του 1%</h1>
     
-    <div id="lobbySection" style="text-align: center;">
+    <!-- LOBBY (Αρχική οθόνη σύνδεσης) -->
+    <div id="lobbySection" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
       <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
       <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί από το κινητό του γίνεται ο διαχειριστής!</p>
+      
+      <div class="lobby-players-box">
+        <h3 style="margin-top: 0; color: #38bdf8;">👥 Παίκτες που συνδέθηκαν:</h3>
+        <div id="lobbyPlayersList" class="connected-players-list">
+          <i style="color: #64748b;">Αναμονή παικτών...</i>
+        </div>
+      </div>
     </div>
 
+    <!-- ΕΡΩΤΗΣΕΙΣ -->
     <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center;">
       <div id="timerText" class="timer-text">30</div>
       <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
@@ -65,7 +78,8 @@
       </div>
     </div>
 
-    <div id="gameOverSection" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <!-- ΤΕΛΙΚΟΣ ΠΙΝΑΚΑΣ (Εμφανίζεται μόνο στο τέλος) -->
+    <div id="gameOverSection" style="display:none; width: 100%; flex-direction: column; align-items: center;">
       <div class="game-over-card">
         <h2 style="color: #f59e0b; font-size: 2.2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
         <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 20px;">Ο διαχειριστής μπορεί να πατήσει "Παίξε Ξανά" από το κινητό του!</p>
@@ -74,7 +88,7 @@
     </div>
   </div>
 
-  <!-- Πλαϊνή μπάρα (εμφανίζεται μόνο αφού ξεκινήσει το παιχνίδι) -->
+  <!-- Πλαϊνή μπάρα βαθμολογίας (μόλις ξεκινήσει το παιχνίδι) -->
   <div id="sidebar" class="sidebar">
     <h2>🏆 Βαθμολογία</h2>
     <div id="scoreboardList"></div>
@@ -93,14 +107,13 @@
 
     socket.on('update-players', (data) => {
       updateScoreboard(data.playersList);
+      updateLobbyPlayers(data.playersList);
     });
 
     socket.on('show-question', (data) => {
       document.getElementById('lobbySection').style.display = 'none';
       document.getElementById('gameOverSection').style.display = 'none';
       document.getElementById('questionSection').style.display = 'block';
-      
-      // Εμφάνιση του sidebar μόλις ξεκινήσει η πρώτη ερώτηση
       document.getElementById('sidebar').style.display = 'flex';
       
       document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum}/${data.total} (${data.levelName}) — ⭐ ${data.points} πόντοι`;
@@ -153,8 +166,6 @@
     socket.on('game-over', (data) => {
       document.getElementById('questionSection').style.display = 'none';
       document.getElementById('gameOverSection').style.display = 'flex';
-      
-      // Κρύβουμε το sidebar στο τέλος αφού έχουμε τον μεγάλο πίνακα στη μέση
       document.getElementById('sidebar').style.display = 'none';
 
       const finalContainer = document.getElementById('finalScoreboardList');
@@ -176,12 +187,27 @@
       updateScoreboard(data.playersList);
     });
 
+    function updateLobbyPlayers(playersList) {
+      const lobbyListEl = document.getElementById('lobbyPlayersList');
+      lobbyListEl.innerHTML = '';
+      if (playersList.length === 0) {
+        lobbyListEl.innerHTML = '<i style="color: #64748b;">Αναμονή παικτών...</i>';
+        return;
+      }
+      playersList.forEach(p => {
+        const tag = document.createElement('div');
+        tag.className = 'player-tag';
+        tag.textContent = `${p.name} ${p.isHost ? '👑' : ''}`;
+        lobbyListEl.appendChild(tag);
+      });
+    }
+
     function updateScoreboard(playersList) {
       const listEl = document.getElementById('scoreboardList');
       listEl.innerHTML = '';
       playersList.sort((a, b) => b.score - a.score).forEach(p => {
         const row = document.createElement('div');
-        row.className, row.className = 'player-row';
+        row.className = 'player-row';
         row.innerHTML = `<span>${p.name} ${p.isHost ? '👑' : ''}</span> <strong>${p.score}</strong>`;
         listEl.appendChild(row);
       });

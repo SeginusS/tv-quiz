@@ -19,7 +19,18 @@ const pointsPerLevel = {
 
 const questionsByLevel = {
   "90%": [
-    { question: "[90%] Αν το χθες ήταν Τρίτη, τι μέρα είναι αύριο;", imageUrl: "", options: { A: "Τετάρτη", B: "Πέμπτη", C: "Παρασκευή", D: "Σάββατο" }, correct: "B" }
+{
+    question: "[90%] "Ποια από τις τέσσετις μύτες δεν αναπνέει; ,
+    imageUrl: "",
+    options: { 
+      A: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10",
+      B: "https://thumbs.dreamstime.com/b/none-188018600.jpg", 
+      C: "https://www.tanea.gr/wp-content/uploads/2011/04/pig.jpg",             // Αν είναι απλό κείμενο, θα δείξει κανονικά το κείμενο
+      D: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10" 
+    },
+    correct: "D"
+  }
+
   ],
   "80%": [
     { question: "[80%] Ποιο σχήμα έχει τις περισσότερες πλευρές;", imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600", options: { A: "Τετράγωνο", B: "Πεντάγωνο", C: "Εξάγωνο", D: "Οκτάγωνο" }, correct: "D" }

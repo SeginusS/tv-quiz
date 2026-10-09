@@ -59,6 +59,11 @@
         </div>
       </div>
     </div>
+
+    <div id="gameOverSection" style="display:none; text-align: center;">
+      <h2>🏆 Τέλος Παιχνιδιού!</h2>
+      <p style="font-size: 1.4rem; color: #38bdf8;">Ο διαχειριστής μπορεί να πατήσει "Παίξε Ξανά" από το κινητό του!</p>
+    </div>
   </div>
 
   <div class="sidebar">
@@ -83,6 +88,7 @@
 
     socket.on('show-question', (data) => {
       document.getElementById('lobbySection').style.display = 'none';
+      document.getElementById('gameOverSection').style.display = 'none';
       document.getElementById('questionSection').style.display = 'block';
       
       document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum} από ${data.total}`;
@@ -101,13 +107,11 @@
       document.getElementById('optC').querySelector('span').textContent = `C: ${data.options.C}`;
       document.getElementById('optD').querySelector('span').textContent = `D: ${data.options.D}`;
 
-      // Καθαρισμός χρωμάτων και avatars για να μην φαίνεται τίποτα κατά τη διάρκεια σκέψης
       ['A', 'B', 'C', 'D'].forEach(opt => {
         document.getElementById(`opt${opt}`).classList.remove('correct-ans');
         document.getElementById(`avatars${opt}`).innerHTML = '';
       });
 
-      // Επαναφορά μπάρας χρονομέτρου
       document.getElementById('timerBar').style.width = '100%';
     });
 
@@ -117,12 +121,9 @@
       document.getElementById('timerBar').style.width = percentage + '%';
     });
 
-    // ΟΙ ΑΠΑΝΤΗΣΕΙΣ ΚΑΙ ΤΑ ΑVATARS ΕΜΦΑΝΙΖΟΝΤΑΙ ΜΟΝΟ ΕΔΩ (ΟΤΑΝ ΤΕΛΕΙΩΣΕΙ Ο ΧΡΟΝΟΣ)
     socket.on('reveal-answer', (data) => {
-      // 1. Φωτίζουμε τη σωστή απάντηση πράσινη
       document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
 
-      // 2. Τοποθετούμε τα κυκλάκια των παικτών πάνω στις επιλογές τους
       for (let id in data.answersState) {
         const ansObj = data.answersState[id];
         const bubble = document.createElement('div');
@@ -138,7 +139,8 @@
     });
 
     socket.on('game-over', (data) => {
-      document.getElementById('questionSection').innerHTML = '<h2>🏆 Τέλος Παιχνιδιού!</h2>';
+      document.getElementById('questionSection').style.display = 'none';
+      document.getElementById('gameOverSection').style.display = 'block';
       updateScoreboard(data.playersList);
     });
 

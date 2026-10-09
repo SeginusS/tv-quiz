@@ -10,19 +10,33 @@ app.use(express.static(__dirname));
 
 const rooms = {};
 
-const gameQuestions = [
+// ΕΔΩ ΜΠΟΡΕΙΣ ΝΑ ΒΑΛΕΙΣ ΕΚΑΤΟΝΤΑΔΕΣ ΕΡΩΤΗΣΕΙΣ!
+const allGameQuestions = [
   {
-    question: "Ποιος αριθμός κρύβεται στο ερωτηματικό;",
+    question: "Ερώτηση 1: Ποιος αριθμός κρύβεται στο ερωτηματικό;",
     imageUrl: "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?w=600",
     options: { A: "5", B: "7", C: "9", D: "12" },
     correct: "B"
   },
   {
-    question: "Πόσα τετράγωνα βλέπεις συνολικά;",
+    question: "Ερώτηση 2: Πόσα τετράγωνα βλέπεις συνολικά;",
     imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600",
     options: { A: "10", B: "14", C: "16", D: "20" },
     correct: "C"
+  },
+  {
+    question: "Ερώτηση 3: Ποιο σχήμα έχει τα περισσότερα πλευρά;",
+    imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600",
+    options: { A: "Τετράγωνο", B: "Πεντάγωνο", C: "Εξάγωνο", D: "Οκτάγωνο" },
+    correct: "D"
+  },
+  {
+    question: "Ερώτηση 4: Αν το χθες ήταν δύο μέρες μετά τη Δευτέρα, τι μέρα είναι σήμερα;",
+    imageUrl: "",
+    options: { A: "Τετάρτη", B: "Πέμπτη", C: "Παρασκευή", D: "Σάββατο" },
+    correct: "D"
   }
+  // Μπορείς να προσθέσεις όσες ερωτήσεις θες εδώ με την ίδια δομή...
 ];
 
 io.on('connection', (socket) => {
@@ -33,7 +47,9 @@ io.on('connection', (socket) => {
       players: {}, 
       currentQuestionIndex: -1,
       timer: null,
-      answersState: {} 
+      answersState: {},
+      selectedQuestions: [],
+      usedQuestionIndices: [] // <--- Εδώ θυμόμαστε ποιες ερωτήσεις έχουν ήδη πέσει σε αυτό το δωμάτιο!
     };
     socket.join(roomId);
     socket.emit('room-created', roomId);
@@ -61,18 +77,65 @@ io.on('connection', (socket) => {
     }
   });
 
+  // ΕΝΑΡΞΗ ΝΕΟΥ ΓΥΡΟΥ ΧΩΡΙΣ ΕΠΑΝΑΛΗΨΗ ΠΑΛΙΩΝ ΕΡΩΤΗΣΕΩΝ
+  socket.on('start-game', (roomId) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    // Μηδενισμός σκορ παικτών
+    for (let id in room.players) {
+      room.players[id].score = 0;
+    }
+
+    // Βρίσκουμε ποιες ερωτήσεις ΔΕΝ έχουν χρησιμοποιηθεί ακόμα σε αυτό το session
+    const availableIndices = [];
+    for (let i = 0; i < allGameQuestions.length; i++) {
+      if (!room.usedQuestionIndices.includes(i)) {
+        availableIndices.push(i);
+      }
+    }
+
+    // Αν έχουν τελειώσει σχεδόν όλες οι ερωτήσεις της λίστας, μηδενίζουμε το ιστορικό για να ξαναρχίσουν από την αρχή
+    if (availableIndices.length < 5) {
+      room.usedQuestionIndices = [];
+      for (let i = 0; i < allGameQuestions.length; i++) {
+        availableIndices.push(i);
+      }
+    }
+
+    // Ανακατεύουμε τις διαθέσιμες ερωτήσεις τυχαία
+    availableIndices.sort(() => 0.5 - Math.random());
+
+    // Παίρνουμε έως 15 (ή όσες απομένουν αν είναι λιγότερες)
+    const countToPick = Math.min(15, availableIndices.length);
+    const chosenIndices = availableIndices.slice(0, countToPick);
+
+    // Τις προσθέτουμε στο ιστορικό των χρησιμοποιημένων για να ΜΕΝ μην ξαναδεί ποτέ ούτε μία ίδια
+    room.usedQuestionIndices.push(...chosenIndices);
+
+    // Δημιουργούμε τη λίστα των ερωτήσεων για αυτό το παιχνίδι
+    room.selectedQuestions = chosenIndices.map(index => allGameQuestions[index]);
+    room.currentQuestionIndex = -1;
+
+    loadNextQuestion(roomId);
+  });
+
   socket.on('next-question', (roomId) => {
+    loadNextQuestion(roomId);
+  });
+
+  function loadNextQuestion(roomId) {
     const room = rooms[roomId];
     if (!room) return;
 
     room.currentQuestionIndex++;
-    if (room.currentQuestionIndex < gameQuestions.length) {
-      const q = gameQuestions[room.currentQuestionIndex];
+    if (room.currentQuestionIndex < room.selectedQuestions.length) {
+      const q = room.selectedQuestions[room.currentQuestionIndex];
       room.answersState = {};
 
       io.to(roomId).emit('show-question', {
         questionNum: room.currentQuestionIndex + 1,
-        total: gameQuestions.length,
+        total: room.selectedQuestions.length,
         question: q.question,
         imageUrl: q.imageUrl,
         options: q.options
@@ -88,11 +151,9 @@ io.on('connection', (socket) => {
         const totalPlayers = Object.keys(room.players).length;
         const answeredCount = Object.keys(room.answersState).length;
 
-        // Αν τελειώσει ο χρόνος Ή απαντήσουν όλοι οι παίκτες νωρίτερα
         if (timeLeft <= 0 || (totalPlayers > 0 && answeredCount >= totalPlayers)) {
           clearInterval(room.timer);
           
-          // Τώρα αποκαλύπτουμε τις απαντήσεις και τη σωστή λύση
           io.to(roomId).emit('reveal-answer', {
             correct: q.correct,
             playersList: Object.values(room.players),
@@ -106,21 +167,20 @@ io.on('connection', (socket) => {
         playersList: Object.values(room.players)
       });
     }
-  });
+  }
 
   socket.on('submit-answer', ({ roomId, answer }) => {
     const room = rooms[roomId];
     if (!room) return;
 
     const qIndex = room.currentQuestionIndex;
-    const currentQ = gameQuestions[qIndex];
+    const currentQ = room.selectedQuestions[qIndex];
     const player = room.players[socket.id];
 
     if (player && !room.answersState[socket.id]) {
       const isCorrect = (answer === currentQ.correct);
       if (isCorrect) player.score += 100;
 
-      // Αποθηκεύουμε την απάντηση κρυφά στον server
       room.answersState[socket.id] = {
         name: player.name,
         initial: player.name.charAt(0).toUpperCase(),
@@ -128,7 +188,6 @@ io.on('connection', (socket) => {
         isCorrect: isCorrect
       };
 
-      // Ενημερώνουμε απλά το κινητό ότι καταγράφηκε (χωρίς να το δείξουμε στην TV ακόμα)
       socket.emit('answer-locked');
     }
   });

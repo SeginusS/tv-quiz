@@ -31,7 +31,7 @@
     <h3 id="welcomeMsg"></h3>
     
     <div id="hostControls" class="hidden" style="margin-bottom: 20px;">
-      <button class="btn-main" style="background: #059669;" onclick="nextQuestion()">🚀 Επόμενη Ερώτηση</button>
+      <button id="actionBtn" class="btn-main" style="background: #059669;" onclick="startOrNextGame()">🚀 Έναρξη Παιχνιδιού</button>
     </div>
 
     <p id="statusMsg">Περιμένετε την έναρξη...</p>
@@ -48,6 +48,7 @@
     const socket = io();
     let currentRoom = '';
     let hasAnswered = false;
+    let gameStarted = false;
 
     function joinGame() {
       const name = document.getElementById('playerName').value;
@@ -72,14 +73,22 @@
 
     socket.on('error-message', (msg) => alert(msg));
 
-    function nextQuestion() {
-      socket.emit('next-question', currentRoom);
+    function startOrNextGame() {
+      if (!gameStarted) {
+        socket.emit('start-game', currentRoom);
+        gameStarted = true;
+      } else {
+        socket.emit('next-question', currentRoom);
+      }
     }
 
     socket.on('show-question', () => {
       hasAnswered = false;
-      document.getElementById('statusMsg').textContent = 'Επιλέξτε απάντηση (30 δευτερόλεπτα)!';
+      document.getElementById('statusMsg').textContent = 'Επιλέξτε απάντηση!';
       document.getElementById('buttonsGrid').classList.remove('hidden');
+      
+      const actionBtn = document.getElementById('actionBtn');
+      if (actionBtn) actionBtn.textContent = '➡️ Επόμενη Ερώτηση';
     });
 
     function sendAnswer(ans) {
@@ -87,13 +96,9 @@
       hasAnswered = true;
       
       socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
-      document.getElementById('statusMsg').textContent = `Η απάντησή σας (${ans}) κλειδώθηκε! 🤫 Περιμένετε τη λήξη του χρόνου...`;
+      document.getElementById('statusMsg').textContent = `Η απάντησή σας (${ans}) κλειδώθηκε! 🤫 Περιμένετε...`;
       document.getElementById('buttonsGrid').classList.add('hidden');
     }
-
-    socket.on('answer-locked', () => {
-      // Επιβεβαίωση από server ότι καταγράφηκε
-    });
 
     socket.on('reveal-answer', () => {
       document.getElementById('buttonsGrid').classList.add('hidden');
@@ -101,7 +106,14 @@
     });
 
     socket.on('game-over', () => {
-      document.getElementById('controllerSection').innerHTML = '<h2>🏆 Το παιχνίδι τελείωσε!</h2>';
+      document.getElementById('buttonsGrid').classList.add('hidden');
+      document.getElementById('statusMsg').textContent = '🏆 Το παιχνίδι τελείωσε!';
+      
+      const actionBtn = document.getElementById('actionBtn');
+      if (actionBtn) {
+        actionBtn.textContent = '🔄 Παίξε Ξανά';
+        gameStarted = false; // Επιτρέπει την επανεκκίνηση
+      }
     });
   </script>
 </body>

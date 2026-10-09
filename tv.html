@@ -14,7 +14,6 @@
     .code-box { background: #1e293b; padding: 10px 25px; border-radius: 12px; border: 2px solid #3b82f6; margin-bottom: 20px; font-size: 1.5rem; }
     .room-code { color: #f59e0b; font-weight: bold; letter-spacing: 2px; }
     
-    /* Λίστα παικτών στο Lobby */
     .lobby-players-box { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 500px; margin-top: 20px; border: 2px solid #334155; text-align: center; }
     .connected-players-list { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
     .player-tag { background: #334155; padding: 8px 16px; border-radius: 20px; font-size: 1.1rem; border: 1px solid #475569; }
@@ -45,7 +44,6 @@
   <div class="main-content">
     <h1>📺 Το Κλαμπ του 1%</h1>
     
-    <!-- LOBBY (Αρχική οθόνη σύνδεσης) -->
     <div id="lobbySection" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
       <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
       <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί από το κινητό του γίνεται ο διαχειριστής!</p>
@@ -58,7 +56,6 @@
       </div>
     </div>
 
-    <!-- ΕΡΩΤΗΣΕΙΣ -->
     <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center;">
       <div id="timerText" class="timer-text">30</div>
       <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
@@ -78,7 +75,6 @@
       </div>
     </div>
 
-    <!-- ΤΕΛΙΚΟΣ ΠΙΝΑΚΑΣ (Εμφανίζεται μόνο στο τέλος) -->
     <div id="gameOverSection" style="display:none; width: 100%; flex-direction: column; align-items: center;">
       <div class="game-over-card">
         <h2 style="color: #f59e0b; font-size: 2.2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
@@ -88,7 +84,6 @@
     </div>
   </div>
 
-  <!-- Πλαϊνή μπάρα βαθμολογίας (μόλις ξεκινήσει το παιχνίδι) -->
   <div id="sidebar" class="sidebar">
     <h2>🏆 Βαθμολογία</h2>
     <div id="scoreboardList"></div>
@@ -144,6 +139,22 @@
       document.getElementById('timerText').textContent = timeLeft;
       const percentage = (timeLeft / 30) * 100;
       document.getElementById('timerBar').style.width = percentage + '%';
+    });
+
+    socket.on('game-paused', () => {
+      document.getElementById('qTitle').textContent += ' [ΠΑΥΣΗ]';
+    });
+
+    socket.on('game-resumed', () => {
+      // Συνέχιση κανονικά
+    });
+
+    socket.on('game-terminated', (data) => {
+      document.getElementById('questionSection').style.display = 'none';
+      document.getElementById('gameOverSection').style.display = 'none';
+      document.getElementById('sidebar').style.display = 'none';
+      document.getElementById('lobbySection').style.display = 'flex';
+      updateLobbyPlayers(data.playersList);
     });
 
     socket.on('reveal-answer', (data) => {

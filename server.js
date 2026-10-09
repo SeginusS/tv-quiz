@@ -63,6 +63,7 @@ io.on('connection', (socket) => {
       timer: null,
       autoAdvanceTimer: null,
       timeLeft: 30,
+      isPaused: false,
       answersState: {},
       selectedQuestions: [],
       usedQuestionsMap: {}
@@ -76,13 +77,11 @@ io.on('connection', (socket) => {
     socket.emit('room-created', roomId);
   });
 
-  // Σύνδεση ή Επανασύνδεση παίκτη
   socket.on('join-room', ({ roomId, playerName }) => {
     if (rooms[roomId]) {
       socket.join(roomId);
       const room = rooms[roomId];
 
-      // Έλεγχος αν ο παίκτης υπάρχει ήδη (reconnect μετά από refresh)
       let existingSocketId = null;
       for (let sId in room.players) {
         if (room.players[sId].name === playerName) {
@@ -93,9 +92,7 @@ io.on('connection', (socket) => {
 
       if (existingSocketId) {
         room.players[socket.id] = room.players[existingSocketId];
-        if (existingSocketId !== socket.id) {
-          delete room.players[existingSocketId];
-        }
+        if (existingSocketId !== socket.id) delete room.players[existingSocketId];
         if (room.hostSocket === existingSocketId) {
           room.hostSocket = socket.id;
           room.players[socket.id].isHost = true;
@@ -117,10 +114,7 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     if (!room) return;
 
-    for (let id in room.players) {
-      room.players[id].score = 0;
-    }
-
+    for (let id in room.players) room.players[id].score = 0;
     room.selectedQuestions = [];
 
     levelsOrder.forEach(lvl => {
@@ -154,6 +148,7 @@ io.on('connection', (socket) => {
 
     clearInterval(room.timer);
     clearTimeout(room.autoAdvanceTimer);
+    room.isPaused = false;
 
     room.currentQuestionIndex++;
     if (room.currentQuestionIndex < room.selectedQuestions.length) {
@@ -172,6 +167,8 @@ io.on('connection', (socket) => {
 
       room.timeLeft = 30;
       room.timer = setInterval(() => {
+        if (room.isPaused) return; // Αν είναι σε παύση, ο χρόνος δεν μετράει
+
         room.timeLeft--;
         io.to(roomId).emit('timer-update', room.timeLeft);
 
@@ -198,43 +195,17 @@ io.on('connection', (socket) => {
     }
   }
 
-  // Έλεγχοι Διαχειριστή (Παύση, Συνέχιση, Τερματισμός)
   socket.on('pause-game', (roomId) => {
     const room = rooms[roomId];
     if (!room) return;
-    clearInterval(room.timer);
-    clearTimeout(room.autoAdvanceTimer);
+    room.isPaused = true;
     io.to(roomId).emit('game-paused');
   });
 
   socket.on('resume-game', (roomId) => {
     const room = rooms[roomId];
     if (!room) return;
-    
-    // Συνέχιση χρονομέτρου από εκεί που έμεινε
-    room.timer = setInterval(() => {
-      room.timeLeft--;
-      io.to(roomId).emit('timer-update', room.timeLeft);
-
-      const totalPlayers = Object.keys(room.players).length;
-      const answeredCount = Object.keys(room.answersState).length;
-
-      if (room.timeLeft <= 0 || (totalPlayers > 0 && answeredCount >= totalPlayers)) {
-        clearInterval(room.timer);
-        const q = room.selectedQuestions[room.currentQuestionIndex];
-        
-        io.to(roomId).emit('reveal-answer', {
-          correct: q.correct,
-          playersList: Object.values(room.players),
-          answersState: room.answersState
-        });
-
-        room.autoAdvanceTimer = setTimeout(() => {
-          loadNextQuestion(roomId);
-        }, 5000);
-      }
-    }, 1000);
-
+    room.isPaused = false;
     io.to(roomId).emit('game-resumed');
   });
 
@@ -244,15 +215,13 @@ io.on('connection', (socket) => {
     clearInterval(room.timer);
     clearTimeout(room.autoAdvanceTimer);
     room.currentQuestionIndex = -1;
-    for (let id in room.players) {
-      room.players[id].score = 0;
-    }
+    for (let id in room.players) room.players[id].score = 0;
     io.to(roomId).emit('game-terminated', { playersList: Object.values(room.players) });
   });
 
   socket.on('submit-answer', ({ roomId, answer }) => {
     const room = rooms[roomId];
-    if (!room) return;
+    if (!room || room.isPaused) return; // Αν είναι σε παύση, απορρίπτεται η απάντηση
 
     const qIndex = room.currentQuestionIndex;
     const currentQ = room.selectedQuestions[qIndex];

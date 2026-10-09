@@ -18,7 +18,7 @@
     .connected-players-list { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
     .player-tag { background: #334155; padding: 8px 16px; border-radius: 20px; font-size: 1.1rem; border: 1px solid #475569; }
 
-    .game-card { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 700px; box-sizing: border-box; }
+    .game-card { background: #1e293b; padding: 20px; border-radius: 16px; width: 100%; max-width: 700px; box-sizing: border-box; position: relative; }
     .question-img { display: block; max-width: 100%; max-height: 200px; margin: 0 auto 15px auto; border-radius: 10px; border: 2px solid #475569; }
     
     .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
@@ -31,6 +31,10 @@
     .timer-container { width: 100%; max-width: 700px; background: #334155; height: 12px; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
     .timer-bar { width: 100%; height: 100%; background: #f59e0b; transition: width 1s linear; }
     .timer-text { font-size: 1.5rem; color: #f59e0b; font-weight: bold; margin-bottom: 5px; }
+
+    /* Μήνυμα Παύσης στην TV */
+    #pauseOverlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 10; align-items: center; justify-content: center; border-radius: 16px; }
+    #pauseOverlay h2 { color: #f59e0b; font-size: 3rem; margin: 0; border: 4px dashed #f59e0b; padding: 20px 40px; border-radius: 16px; background: #1e293b; }
 
     .sidebar h2 { font-size: 1.3rem; color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }
     .player-row { display: flex; justify-content: space-between; background: #334155; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 1.1rem; }
@@ -56,7 +60,12 @@
       </div>
     </div>
 
-    <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center;">
+    <div id="questionSection" style="display:none; width: 100%; max-width: 700px; text-align: center; position: relative;">
+      <!-- Overlay Παύσης -->
+      <div id="pauseOverlay">
+        <h2>⏸️ ΠΑΥΣΗ ⏸️</h2>
+      </div>
+
       <div id="timerText" class="timer-text">30</div>
       <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
       
@@ -110,6 +119,7 @@
       document.getElementById('gameOverSection').style.display = 'none';
       document.getElementById('questionSection').style.display = 'block';
       document.getElementById('sidebar').style.display = 'flex';
+      document.getElementById('pauseOverlay').style.display = 'none';
       
       document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum}/${data.total} (${data.levelName}) — ⭐ ${data.points} πόντοι`;
       document.getElementById('qText').textContent = data.question;
@@ -142,11 +152,11 @@
     });
 
     socket.on('game-paused', () => {
-      document.getElementById('qTitle').textContent += ' [ΠΑΥΣΗ]';
+      document.getElementById('pauseOverlay').style.display = 'flex';
     });
 
     socket.on('game-resumed', () => {
-      // Συνέχιση κανονικά
+      document.getElementById('pauseOverlay').style.display = 'none';
     });
 
     socket.on('game-terminated', (data) => {
@@ -158,6 +168,7 @@
     });
 
     socket.on('reveal-answer', (data) => {
+      document.getElementById('pauseOverlay').style.display = 'none';
       document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
 
       for (let id in data.answersState) {

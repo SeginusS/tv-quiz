@@ -30,7 +30,6 @@
   <div id="controllerSection" class="hidden">
     <h3 id="welcomeMsg"></h3>
     
-    <!-- Κουμπιά Διαχειριστή (Εμφανίζονται αποκλειστικά στον host) -->
     <div id="hostControls" class="hidden" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
       <button id="actionBtn" class="btn-main" style="background: #059669; width: 90%; max-width: 320px;" onclick="startGame()">🚀 Έναρξη Παιχνιδιού</button>
       <div style="display: flex; gap: 8px; width: 90%; max-width: 320px;">
@@ -65,7 +64,7 @@
     };
 
     function joinGame() {
-      const name = document.getElementById('playerName').value.trim();
+      const name = document.getElementById('playerName'].value.trim();
       const room = document.getElementById('roomInput').value.trim();
 
       if (name && room) {
@@ -81,7 +80,6 @@
       document.getElementById('controllerSection').classList.remove('hidden');
       document.getElementById('welcomeMsg').textContent = `Παίζεις ως: ${data.playerName}`;
 
-      // ΕΛΕΓΧΟΣ: Εμφάνιση κουμπιών διαχειριστή ΜΟΝΟ αν ο παίκτης είναι ο host
       const hostControls = document.getElementById('hostControls');
       if (data.isHost) {
         hostControls.style.display = 'flex';
@@ -125,12 +123,17 @@
       document.getElementById('buttonsGrid').classList.add('hidden');
     }
 
+    // ΟΤΑΝ ΜΠΑΙΝΕΙ ΣΕ ΠΑΥΣΗ, ΚΡΥΒΟΝΤΑΙ ΤΑ ΚΟΥΜΠΙΑ ΑΠΑΝΤΗΣΗΣ ΚΑΙ ΔΕΙΧΝΕΙ ΜΗΝΥΜΑ
     socket.on('game-paused', () => {
-      document.getElementById('statusMsg').textContent = '⏸️ Το παιχνίδι σε παύση...';
+      document.getElementById('buttonsGrid').classList.add('hidden');
+      document.getElementById('statusMsg').textContent = '⏸️ ΤΟ ΠΑΙΧΝΙΔΙ ΕΙΣΕΛΘΕ ΣΕ ΠΑΥΣΗ';
     });
 
     socket.on('game-resumed', () => {
-      document.getElementById('statusMsg').textContent = '▶️ Το παιχνίδι συνεχίζεται!';
+      if (!hasAnswered) {
+        document.getElementById('buttonsGrid').classList.remove('hidden');
+      }
+      document.getElementById('statusMsg').textContent = '▶️ Το παιχνίδι συνεχίζεται κανονικά!';
     });
 
     socket.on('game-terminated', () => {

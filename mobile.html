@@ -30,7 +30,7 @@
   <div id="controllerSection" class="hidden">
     <h3 id="welcomeMsg"></h3>
     
-    <!-- Κουμπιά Διαχειριστή (Έναρξη, Παύση, Συνέχιση, Τερματισμός) -->
+    <!-- Κουμπιά Διαχειριστή (Εμφανίζονται αποκλειστικά στον host) -->
     <div id="hostControls" class="hidden" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
       <button id="actionBtn" class="btn-main" style="background: #059669; width: 90%; max-width: 320px;" onclick="startGame()">🚀 Έναρξη Παιχνιδιού</button>
       <div style="display: flex; gap: 8px; width: 90%; max-width: 320px;">
@@ -55,7 +55,6 @@
     let currentRoom = '';
     let hasAnswered = false;
 
-    // Αυτόματη επανασύνδεση αν υπάρχουν αποθηκευμένα στοιχεία στον browser
     window.onload = function() {
       const savedName = localStorage.getItem('quiz_player_name');
       const savedRoom = localStorage.getItem('quiz_room_id');
@@ -82,9 +81,14 @@
       document.getElementById('controllerSection').classList.remove('hidden');
       document.getElementById('welcomeMsg').textContent = `Παίζεις ως: ${data.playerName}`;
 
+      // ΕΛΕΓΧΟΣ: Εμφάνιση κουμπιών διαχειριστή ΜΟΝΟ αν ο παίκτης είναι ο host
+      const hostControls = document.getElementById('hostControls');
       if (data.isHost) {
-        document.getElementById('hostControls').classList.remove('hidden');
+        hostControls.style.display = 'flex';
         document.getElementById('statusMsg').textContent = 'Εσείς είστε ο Διαχειριστής!';
+      } else {
+        hostControls.style.display = 'none';
+        document.getElementById('statusMsg').textContent = 'Περιμένετε τον διαχειριστή να ξεκινήσει το παιχνίδι...';
       }
     });
 
@@ -131,8 +135,7 @@
 
     socket.on('game-terminated', () => {
       document.getElementById('buttonsGrid').classList.add('hidden');
-      document.getElementById('statusMsg').textContent = '🛑 Ο διαχειριστής τερμάτισε το παιχνίδι. Επιστροφή στην αρχική!';
-      // Επαναφορά κουμπιού έναρξης
+      document.getElementById('statusMsg').textContent = '🛑 Ο διαχειριστής τερμάτισε το παιχνίδι.';
       const actionBtn = document.getElementById('actionBtn');
       if (actionBtn) actionBtn.textContent = '🚀 Έναρξη Παιχνιδιού';
     });

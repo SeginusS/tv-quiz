@@ -98,12 +98,21 @@
             position: relative;
         }
 
+        .game-card.image-options-mode .question-img {
+            max-height: 100px; /* Μικραίνει η κεντρική για να κάνε χώρο */
+        }
+
+        .game-card.image-options-mode .option {
+            min-height: 145px; /* Μεγάλα τετράγωνα κουτιά για τις εικόνες-απαντήσεις */
+            padding: 6px;
+        }
+
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 110px; /* Μικρότερο ύψος για την κεντρική εικόνα */
-            margin: 0 auto 8px auto;
-            border-radius: 6px;
+            max-height: 180px; /* Μεγάλη φωτογραφία ερώτησης */
+            margin: 0 auto 10px auto;
+            border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
         }
@@ -118,11 +127,11 @@
         /* Ιδανικό ύψος κουτιών για να μηδενιστεί το κόψιμο */
         .option {
             background: #334155;
-            padding: 6px;
+            padding: 8px;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             position: relative;
-            min-height: 115px;
+            min-height: 65px; /* Μικρά, βολικά κουτιά για κείμενο */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -354,6 +363,19 @@
                 imgEl.style.display = 'block';
             } else {
                 imgEl.style.display = 'none';
+            }
+
+            const hasImageOptions = Object.values(data.options).some(opt => {
+                if (typeof opt === 'object' && opt !== null) return opt.type === 'image';
+                if (typeof opt === 'string' && (opt.startsWith('http://') || opt.startsWith('https://'))) return true;
+                return false;
+            });
+
+            const gameCardEl = document.querySelector('.game-card');
+            if (hasImageOptions) {
+                gameCardEl.classList.add('image-options-mode');
+            } else {
+                gameCardEl.classList.remove('image-options-mode');
             }
 
             function setOptionContent(optLetter, optData) {

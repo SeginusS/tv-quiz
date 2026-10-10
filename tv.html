@@ -98,19 +98,22 @@
             position: relative;
         }
 
-        .game-card.image-options-mode .question-img {
-            max-height: 100px; /* Μικραίνει η κεντρική για να κάνε χώρο */
-        }
+        .game-card.image-options-mode .options-grid,
+        .game-card.both-images-mode .options-grid {
+            gap: 8px; /* Μικρότερο κενό για να εκμεταλλευτούμε κάθε χιλιοστό */
+            margin-top: 6px;
+            }
 
-        .game-card.image-options-mode .option {
-            min-height: 145px; /* Μεγάλα τετράγωνα κουτιά για τις εικόνες-απαντήσεις */
-            padding: 6px;
-        }
+        .game-card.image-options-mode .option,
+        .game-card.both-images-mode .option {
+            min-height: 115px; /* Ιδανικό, βολικό ύψος για τις 4 εικόνες-απαντήσεις */
+            padding: 4px;
+            }
 
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 180px; /* Μεγάλη φωτογραφία ερώτησης */
+            max-height: 180px; /* Σταθερό, μεγάλο μέγεθος για να φαίνονται οι λεπτομέρειες */
             margin: 0 auto 10px auto;
             border-radius: 8px;
             border: 2px solid #475569;

@@ -17,7 +17,7 @@
 
         .main-content {
             flex: 1;
-            padding: 10px 15px;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,19 +39,20 @@
             box-sizing: border-box;
         }
 
-        h1 {
+        /* Lobby τίτλος (φαίνεται μόνο στην αρχή) */
+        .lobby-title {
             color: #60a5fa;
-            margin: 0 0 2px 0;
-            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
         }
 
         .code-box {
             background: #1e293b;
-            padding: 6px 15px;
-            border-radius: 8px;
+            padding: 10px 25px;
+            border-radius: 12px;
             border: 2px solid #3b82f6;
-            margin-bottom: 5px;
-            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
         }
 
         .room-code {
@@ -62,11 +63,11 @@
 
         .lobby-players-box {
             background: #1e293b;
-            padding: 15px;
+            padding: 20px;
             border-radius: 16px;
             width: 100%;
             max-width: 500px;
-            margin-top: 10px;
+            margin-top: 15px;
             border: 2px solid #334155;
             text-align: center;
         }
@@ -76,25 +77,25 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .player-tag {
             background: #334155;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             border: 1px solid #475569;
         }
 
-        /* Σταθερή κάρτα παιχνιδιού που δεν φεύγει ποτέ εκτός */
+        /* Απόλυτα ζυγισμένη κάρτα παιχνιδιού */
         .game-card {
             background: #1e293b;
-            padding: 10px 15px;
-            border-radius: 12px;
+            padding: 15px 20px;
+            border-radius: 14px;
             width: 100%;
             max-width: 850px;
-            max-height: 82vh;
+            max-height: 86vh;
             box-sizing: border-box;
             position: relative;
             display: flex;
@@ -105,37 +106,37 @@
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 140px;
-            margin: 0 auto 5px auto;
-            border-radius: 6px;
+            max-height: 150px;
+            margin: 0 auto 8px auto;
+            border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
         }
 
-        /* ΕΙΔΙΚΗ ΡΥΘΜΙΣΗ: Όταν έχουμε παντού εικόνες, προσαρμόζουμε τα ύψη τέλεια */
+        /* Ειδικές ρυθμίσεις για να δείχνουν συμμετρικά τα κουτιά */
         .game-card.both-images-mode .question-img {
-            max-height: 115px; /* Λίγο πιο μαζεμένη η πάνω εικόνα για να σώσουμε χώρο */
+            max-height: 120px;
         }
 
         .game-card.both-images-mode .option {
-            min-height: 110px; /* Μικρότερο ύψος στα 4 κουτιά ώστε να χωράνε σίγουρα */
-            padding: 3px;
+            min-height: 125px;
+            padding: 4px;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 5px;
+            gap: 10px;
+            margin-top: 8px;
         }
 
         .option {
             background: #334155;
-            padding: 6px;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 1.1rem;
             position: relative;
-            min-height: 55px;
+            min-height: 65px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -146,7 +147,7 @@
         }
 
         .game-card.image-options-mode .option {
-            min-height: 120px;
+            min-height: 135px;
             padding: 4px;
         }
 
@@ -157,17 +158,17 @@
 
         .avatars-container {
             display: flex;
-            gap: 3px;
+            gap: 4px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 2px;
-            max-height: 26px;
+            margin-top: 4px;
+            max-height: 28px;
             overflow: hidden;
         }
 
         .player-bubble {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             background: #3b82f6;
             color: white;
             border-radius: 50%;
@@ -175,7 +176,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             border: 2px solid #fff;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
@@ -186,7 +187,7 @@
             background: #334155;
             height: 8px;
             border-radius: 4px;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             overflow: hidden;
         }
 
@@ -198,7 +199,7 @@
         }
 
         .timer-text {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #f59e0b;
             font-weight: bold;
             margin-bottom: 2px;
@@ -209,7 +210,7 @@
             max-width: 850px;
             text-align: center;
             background: #1e293b;
-            padding: 20px;
+            padding: 25px;
             border-radius: 14px;
             border: 2px solid #3b82f6;
             box-sizing: border-box;
@@ -227,16 +228,16 @@
             z-index: 10;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
+            border-radius: 14px;
         }
 
             #pauseOverlay h2 {
                 color: #f59e0b;
-                font-size: 2.5rem;
+                font-size: 3rem;
                 margin: 0;
                 border: 4px dashed #f59e0b;
-                padding: 15px 30px;
-                border-radius: 12px;
+                padding: 20px 40px;
+                border-radius: 14px;
                 background: #1e293b;
             }
 
@@ -283,9 +284,8 @@
 <body>
 
     <div class="main-content">
-        <h1>1% of people</h1>
-
         <div id="lobbySection" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+            <h1 class="lobby-title">1% of people</h1>
             <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
             <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί γίνεται ο διαχειριστής!</p>
 
@@ -297,7 +297,7 @@
             </div>
         </div>
 
-        <div id="questionSection" style="display:none; width: 100%; max-width: 900px; text-align: center; position: relative;">
+        <div id="questionSection" style="display:none; width: 100%; max-width: 850px; text-align: center; position: relative;">
             <!-- Overlay Παύσης -->
             <div id="pauseOverlay">
                 <h2>⏸️ ΠΑΥΣΗ ⏸️</h2>
@@ -310,7 +310,7 @@
 
             <div class="game-card">
                 <img id="qImage" class="question-img" src="" alt="" style="display:none;">
-                <h3 id="qText" style="font-size: 1.2rem; margin: 0 0 8px 0;"></h3>
+                <h3 id="qText" style="font-size: 1.2rem; margin: 0 0 6px 0;"></h3>
 
                 <div class="options-grid" id="optionsGridContainer">
                     <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
@@ -322,15 +322,15 @@
         </div>
 
         <!-- Οθόνη Εξήγησης -->
-        <div id="explanationSection" style="display:none; width: 100%; max-width: 900px; text-align: center; background: #1e293b; padding: 25px; border-radius: 16px; border: 2px solid #3b82f6;">
-            <h2 style="color: #f59e0b; font-size: 2rem; margin-top: 0;">💡 Εξήγηση Απάντησης</h2>
-            <img id="expPageImage" src="" alt="" style="max-height: 250px; max-width: 100%; border-radius: 10px; margin: 15px auto; display: none; object-fit: contain; border: 2px solid #475569;">
-            <p id="expPageText" style="color: #e2e8f0; font-size: 1.3rem; line-height: 1.5; margin-top: 15px;"></p>
+        <div id="explanationSection" style="display:none; width: 100%; max-width: 850px; text-align: center; background: #1e293b; padding: 25px; border-radius: 14px; border: 2px solid #3b82f6;">
+            <h2 style="color: #f59e0b; font-size: 1.8rem; margin-top: 0;">💡 Εξήγηση Απάντησης</h2>
+            <img id="expPageImage" src="" alt="" style="max-height: 240px; max-width: 100%; border-radius: 8px; margin: 10px auto; display: none; object-fit: contain; border: 2px solid #475569;">
+            <p id="expPageText" style="color: #e2e8f0; font-size: 1.2rem; line-height: 1.4; margin-top: 10px;"></p>
         </div>
 
         <div id="gameOverSection" style="display:none; width: 100%; flex-direction: column; align-items: center;">
             <div class="game-over-card">
-                <h2 style="color: #f59e0b; font-size: 2.2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
+                <h2 style="color: #f59e0b; font-size: 2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
                 <div id="finalScoreboardList"></div>
             </div>
         </div>
@@ -428,7 +428,7 @@
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;
-                    imgTag.style.cssText = 'width: 100%; height: 85px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
+                    imgTag.style.cssText = 'width: 100%; height: 95px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                     imgTag.style.display = 'block';
                 } else {
                     spanTag.style.display = 'block';

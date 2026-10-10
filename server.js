@@ -46,13 +46,34 @@ const questionsByLevel = {
   ],
 
   "70%": [
-    { question: "[70%] Ποιος αριθμός συμπληρώνει τη σειρά: 3, 6, 12, 24, ?;", imageUrl: "", options: { A: "30", B: "36", C: "48", D: "60" }, correct: "C" }
+      {
+          question: "[70%] Ποιο από τα παρακάτω ζώα δεν υπάρχει στον πίνακα;", imageUrl: "https://lh3.googleusercontent.com/d/1Qki65WHQPQyC7hXbxVEJCLuPIdfU9v7u",
+          options: { A: "Σκύλος", B: "Γάτα", C: "Λιοντάρι", D: "Ασβός" }, correct: "C"
+      }
   ],
   "60%": [
-    { question: "[60%] Πόσα τετράγωνα βλέπεις συνολικά;", imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600", options: { A: "10", B: "14", C: "16", D: "20" }, correct: "C" }
+      {
+          question: "[60%] Ποιο γλειφιτζούρι συμπληρώνει την εικόνα;", imageUrl: "https://lh3.googleusercontent.com/d/1z_D3iIgVbo8_7o3FV-vBDanV5mzQXRZl",
+          options: {
+              A: { type: "image", value: "https://lh3.googleusercontent.com/d/11OZJrYq7LIH_oBY6DSM21kNt43B-04cL" },
+              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GUI5wQdLCdiYZU-53nGzJBPD72j5HWOa" },
+              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1Ya-OvBd0ZFdboqZXs60baLfn7NxGCASF" },
+              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1ixDy8xLir9lup9SrdhMC7VB-FqCcm5k3" }
+          },
+          correct: "A"
+      }
   ],
   "50%": [
-    { question: "[50%] Ποιος αριθμός κρύβεται στο ερωτηματικό;", imageUrl: "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?w=600", options: { A: "5", B: "7", C: "9", D: "12" }, correct: "B" }
+      {
+          question: "[50%] Ποιος χρωματικός κύκλος απεικονίζει τα χρώματα στη φουσκωτή πυραμίδα;", imageUrl: "https://lh3.googleusercontent.com/d/14D_ZSKJVEgYztZE4yI1ZZCYHJSy6qMIH",
+          options: {
+              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1d9QMT8IBaLWLZYWGgUX8oS1M1urkqV29" },
+              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1AHrBZsIVdeKQAfNQkWITPGTZz7YGuo_O" },
+              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1J3CPQwzI-Fe7dz_CJVfVRgdAbLrzbneY" },
+              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1tXm8YWoQVdnwWMGCaTJsFLq4mO1YvKfd" }
+          },
+          correct: "C"
+      }
   ],
   "40%": [
     { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνa", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" }

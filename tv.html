@@ -361,7 +361,7 @@
                         imgTag = document.createElement('img');
                         imgTag.className = 'opt-img';
                         // Μεγάλες τετραγωνισμένες εικόνες που γεμίζουν το κουτί
-                        imgTag.style.cssText = 'width: 100%; height: 140px; border-radius: 8px; object-fit: cover; display: block;';
+                        imgTag.style.cssText = 'width: 100%; height: 160px; border-radius: 8px; object-fit: contain; display: block;';
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;

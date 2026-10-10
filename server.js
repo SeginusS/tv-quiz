@@ -242,22 +242,32 @@ io.on('connection', (socket) => {
           
           io.to(roomId).emit('reveal-answer', {
               correct: q.correct,
-              explanation: q.explanation || "Η σωστή απάντηση αποκαλύφθηκε!",
-              explanationImageUrl: q.explanationImageUrl || "",
               playersList: Object.values(room.players),
               answersState: room.answersState
           });
 
           room.autoAdvanceTimer = setTimeout(() => {
-            loadNextQuestion(roomId);
-          }, 10000);
-        }
+              if (q.explanation || q.explanationImageUrl) {
+                  io.to(roomId).emit('show-explanation', {
+                      explanation: q.explanation || "Η σωστή απάντηση αποκαλύφθηκε!",
+                      explanationImageUrl: q.explanationImageUrl || ""
+                  });
+                  room.autoAdvanceTimer = setTimeout(() => {
+                      loadNextQuestion(roomId);
+                  }, 10000);
+              } else {
+                  // Αν δεν υπάρχει εξήγηση, πάμε κατευθείαν στην επόμενη ερώτηση
+                  loadNextQuestion(roomId);
+              }
+          }, 5000); // 5 δευτερόλεπτα για τα avatars/αποκάλυψη
+          }
       }, 1000);
 
-    } else {
-      io.to(roomId).emit('game-over', { playersList: Object.values(room.players) });
-    }
+      } else {
+          io.to(roomId).emit('game-over', { playersList: Object.values(room.players) });
+      }
   }
+    
 
   socket.on('pause-game', (roomId) => {
     const room = rooms[roomId];

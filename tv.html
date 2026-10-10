@@ -17,7 +17,7 @@
 
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -41,17 +41,17 @@
 
         h1 {
             color: #60a5fa;
-            margin: 0 0 10px 0;
-            font-size: 2rem;
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
         }
 
         .code-box {
             background: #1e293b;
-            padding: 10px 25px;
-            border-radius: 12px;
+            padding: 8px 20px;
+            border-radius: 10px;
             border: 2px solid #3b82f6;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
         }
 
         .room-code {
@@ -62,11 +62,11 @@
 
         .lobby-players-box {
             background: #1e293b;
-            padding: 20px;
+            padding: 15px;
             border-radius: 16px;
             width: 100%;
             max-width: 500px;
-            margin-top: 20px;
+            margin-top: 15px;
             border: 2px solid #334155;
             text-align: center;
         }
@@ -76,34 +76,38 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .player-tag {
             background: #334155;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             border: 1px solid #475569;
         }
 
-        /* Μεγαλύτερη κάρτα παιχνιδιού που εκμεταλλεύεται όλο το πλάτος χωρίς sidebar */
+        /* Αυστηρός περιορισμός ύψους στην κάρτα για να μην φεύγει τίποτα εκτός */
         .game-card {
             background: #1e293b;
-            padding: 20px 25px;
-            border-radius: 16px;
+            padding: 15px 20px;
+            border-radius: 14px;
             width: 100%;
-            max-width: 950px;
+            max-width: 900px;
+            max-height: calc(100vh - 120px);
             box-sizing: border-box;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 220px;
-            margin: 0 auto 12px auto;
-            border-radius: 10px;
+            max-height: 160px;
+            margin: 0 auto 8px auto;
+            border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
         }
@@ -111,17 +115,17 @@
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 14px;
+            gap: 10px;
+            margin-top: 8px;
         }
 
         .option {
             background: #334155;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 1.1rem;
             position: relative;
-            min-height: 70px;
+            min-height: 65px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -131,11 +135,11 @@
             text-align: center;
         }
 
-        /* Δυναμικά ύψφη όταν οι επιλογές είναι εικόνες */
+        /* Δυναμικά ύψφη όταν οι επιλογές είναι εικόνες - προσαρμοσμένα για να χωράνε και τα avatars */
         .game-card.image-options-mode .option,
         .game-card.both-images-mode .option {
-            min-height: 160px;
-            padding: 6px;
+            min-height: 140px;
+            padding: 4px;
         }
 
         .correct-ans {
@@ -143,17 +147,20 @@
             border: 2px solid #34d399;
         }
 
+        /* Μικρότερες φούσκες για να μη φουσκώνουν το κάτω μέρος */
         .avatars-container {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
-            justify-content: flex-end;
-            margin-top: 6px;
+            justify-content: center;
+            margin-top: 4px;
+            max-height: 30px;
+            overflow: hidden;
         }
 
         .player-bubble {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             background: #3b82f6;
             color: white;
             border-radius: 50%;
@@ -161,18 +168,18 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             border: 2px solid #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .timer-container {
             width: 100%;
-            max-width: 950px;
+            max-width: 900px;
             background: #334155;
-            height: 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
             overflow: hidden;
         }
 
@@ -184,19 +191,19 @@
         }
 
         .timer-text {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #f59e0b;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         /* Οθόνη Εξήγησης */
         #explanationSection {
             width: 100%;
-            max-width: 950px;
+            max-width: 900px;
             text-align: center;
             background: #1e293b;
-            padding: 30px;
+            padding: 25px;
             border-radius: 16px;
             border: 2px solid #3b82f6;
             box-sizing: border-box;
@@ -285,7 +292,7 @@
             </div>
         </div>
 
-        <div id="questionSection" style="display:none; width: 100%; max-width: 950px; text-align: center; position: relative;">
+        <div id="questionSection" style="display:none; width: 100%; max-width: 900px; text-align: center; position: relative;">
             <!-- Overlay Παύσης -->
             <div id="pauseOverlay">
                 <h2>⏸️ ΠΑΥΣΗ ⏸️</h2>
@@ -294,11 +301,11 @@
             <div id="timerText" class="timer-text">30</div>
             <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
 
-            <h2 id="qTitle" style="margin: 5px 0; font-size: 1.2rem; color: #94a3b8;">Ερώτηση</h2>
+            <h2 id="qTitle" style="margin: 4px 0; font-size: 1.1rem; color: #94a3b8;">Ερώτηση</h2>
 
             <div class="game-card">
                 <img id="qImage" class="question-img" src="" alt="" style="display:none;">
-                <h3 id="qText" style="font-size: 1.3rem; margin-top: 0;"></h3>
+                <h3 id="qText" style="font-size: 1.2rem; margin: 0 0 8px 0;"></h3>
 
                 <div class="options-grid" id="optionsGridContainer">
                     <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
@@ -309,10 +316,10 @@
             </div>
         </div>
 
-        <!-- ΝΕΑ ΟΘΟΝΗ ΕΠΕΞΗΓΗΣΗΣ -->
-        <div id="explanationSection" style="display:none; width: 100%; max-width: 950px; text-align: center; background: #1e293b; padding: 30px; border-radius: 16px; border: 2px solid #3b82f6;">
+        <!-- Οθόνη Εξήγησης -->
+        <div id="explanationSection" style="display:none; width: 100%; max-width: 900px; text-align: center; background: #1e293b; padding: 25px; border-radius: 16px; border: 2px solid #3b82f6;">
             <h2 style="color: #f59e0b; font-size: 2rem; margin-top: 0;">💡 Εξήγηση Απάντησης</h2>
-            <img id="expPageImage" src="" alt="" style="max-height: 280px; max-width: 100%; border-radius: 10px; margin: 15px auto; display: none; object-fit: contain; border: 2px solid #475569;">
+            <img id="expPageImage" src="" alt="" style="max-height: 250px; max-width: 100%; border-radius: 10px; margin: 15px auto; display: none; object-fit: contain; border: 2px solid #475569;">
             <p id="expPageText" style="color: #e2e8f0; font-size: 1.3rem; line-height: 1.5; margin-top: 15px;"></p>
         </div>
 
@@ -324,7 +331,6 @@
         </div>
     </div>
 
-    <!-- Πλαϊνή μπάρα βαθμολογίας (κρυφτή στην ερώτηση, ορατή στην εξήγηση) -->
     <div id="sidebar" class="sidebar">
         <h2>🏆 Βαθμολογία</h2>
         <div id="scoreboardList"></div>
@@ -351,8 +357,6 @@
             document.getElementById('gameOverSection').style.display = 'none';
             document.getElementById('explanationSection').style.display = 'none';
             document.getElementById('questionSection').style.display = 'block';
-
-            // Κρύβουμε εντελώς τη βαθμολογία κατά τη διάρκεια της ερώτησης για να πιάσει όλο τον χώρο
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('pauseOverlay').style.display = 'none';
 
@@ -367,7 +371,6 @@
                 imgEl.style.display = 'none';
             }
 
-            // Έξυπνος έλεγχος διατάξεων για τις εικόνες
             const hasImageOptions = Object.values(data.options).some(opt => {
                 if (typeof opt === 'object' && opt !== null) return opt.type === 'image';
                 if (typeof opt === 'string' && (opt.startsWith('http://') || opt.startsWith('https://'))) return true;
@@ -407,7 +410,7 @@
                 if (!badgeTag) {
                     badgeTag = document.createElement('div');
                     badgeTag.className = 'opt-badge';
-                    badgeTag.style.cssText = 'position: absolute; top: 6px; left: 8px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;';
+                    badgeTag.style.cssText = 'position: absolute; top: 4px; left: 6px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; z-index: 2;';
                     optElement.appendChild(badgeTag);
                 }
                 badgeTag.textContent = optLetter;
@@ -420,8 +423,7 @@
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;
-                    // Δυναμικό ύψος εικόνας επιλογής ανάλογα με τη διάταξη
-                    imgTag.style.cssText = 'width: 100%; height: 135px; border-radius: 8px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
+                    imgTag.style.cssText = 'width: 100%; height: 110px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                     imgTag.style.display = 'block';
                 } else {
                     spanTag.style.display = 'block';
@@ -484,11 +486,10 @@
             updateScoreboard(data.playersList);
         });
 
-        // Εμφάνιση της οθόνης επεξήγησης (εδώ εμφανίζουμε ξανά τη βαθμολογία στα δεξιά)
         socket.on('show-explanation', (data) => {
             document.getElementById('questionSection').style.display = 'none';
             document.getElementById('explanationSection').style.display = 'block';
-            document.getElementById('sidebar').style.display = 'flex'; // Επανεμφάνιση βαθμολογίας
+            document.getElementById('sidebar').style.display = 'flex';
 
             document.getElementById('expPageText').textContent = data.explanation;
             const expImg = document.getElementById('expPageImage');

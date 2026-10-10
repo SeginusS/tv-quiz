@@ -39,7 +39,6 @@
             box-sizing: border-box;
         }
 
-        /* Lobby τίτλος (φαίνεται μόνο στην αρχή) */
         .lobby-title {
             color: #60a5fa;
             margin: 0 0 10px 0;
@@ -88,14 +87,14 @@
             border: 1px solid #475569;
         }
 
-        /* Απόλυτα ζυγισμένη κάρτα παιχνιδιού */
+        /* Κάρτα παιχνιδιού */
         .game-card {
             background: #1e293b;
             padding: 15px 20px;
             border-radius: 14px;
             width: 100%;
-            max-width: 850px;
-            max-height: 86vh;
+            max-width: 800px;
+            max-height: 88vh;
             box-sizing: border-box;
             position: relative;
             display: flex;
@@ -106,37 +105,28 @@
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 150px;
+            max-height: 140px;
             margin: 0 auto 8px auto;
             border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
         }
 
-        /* Ειδικές ρυθμίσεις για να δείχνουν συμμετρικά τα κουτιά */
-        .game-card.both-images-mode .question-img {
-            max-height: 120px;
-        }
-
-        .game-card.both-images-mode .option {
-            min-height: 125px;
-            padding: 4px;
-        }
-
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
             margin-top: 8px;
         }
 
+        /* Βασικό κουτί (για κείμενο) */
         .option {
             background: #334155;
-            padding: 8px;
-            border-radius: 10px;
-            font-size: 1.1rem;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
             position: relative;
-            min-height: 65px;
+            min-height: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -146,9 +136,15 @@
             text-align: center;
         }
 
-        .game-card.image-options-mode .option {
-            min-height: 135px;
-            padding: 4px;
+        /* Ιδανικό, συμμετρικό ύψος για τα κουτιά-εικόνες ώστε να μην είναι στενόμακρες λωρίδες */
+        .game-card.image-options-mode .option,
+        .game-card.both-images-mode .option {
+            min-height: 165px;
+            padding: 6px;
+        }
+
+        .game-card.both-images-mode .question-img {
+            max-height: 110px;
         }
 
         .correct-ans {
@@ -162,13 +158,13 @@
             flex-wrap: wrap;
             justify-content: center;
             margin-top: 4px;
-            max-height: 28px;
+            max-height: 30px;
             overflow: hidden;
         }
 
         .player-bubble {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             background: #3b82f6;
             color: white;
             border-radius: 50%;
@@ -176,14 +172,14 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             border: 2px solid #fff;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .timer-container {
             width: 100%;
-            max-width: 850px;
+            max-width: 800px;
             background: #334155;
             height: 8px;
             border-radius: 4px;
@@ -207,7 +203,7 @@
 
         #explanationSection {
             width: 100%;
-            max-width: 850px;
+            max-width: 800px;
             text-align: center;
             background: #1e293b;
             padding: 25px;
@@ -428,7 +424,7 @@
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;
-                    imgTag.style.cssText = 'width: 100%; height: 95px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
+                    imgTag.style.cssText = 'width: 100%; height: 125px; border-radius: 8px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                     imgTag.style.display = 'block';
                 } else {
                     spanTag.style.display = 'block';

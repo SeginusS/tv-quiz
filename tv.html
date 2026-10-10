@@ -11,36 +11,39 @@
             color: #fff;
             margin: 0;
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden; /* Κρατάει σταθερή την οθόνη της τηλεόρασης χωρίς άσχημα scrolls */
         }
 
         .main-content {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             box-sizing: border-box;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
+            height: 100vh;
+            overflow-y: auto;
         }
 
+        /* Επαναφορά της πλαϊνής μπάρας στα δεξιά */
         .sidebar {
-            width: 320px;
+            width: 300px;
             background: #1e293b;
             border-left: 2px solid #334155;
             padding: 20px;
             display: none;
             flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
         h1 {
             color: #60a5fa;
-            margin: 0 0 5px 0;
+            margin: 0 0 10px 0;
             font-size: 1.8rem;
         }
 
@@ -88,10 +91,10 @@
 
         .game-card {
             background: #1e293b;
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 14px;
             width: 100%;
-            max-width: 650px;
+            max-width: 700px;
             box-sizing: border-box;
             position: relative;
         }
@@ -99,7 +102,7 @@
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 120px; /* Μικρότερη κεντρική εικόνα για να μη ζορίζεται η οθόνη */
+            max-height: 140px;
             margin: 0 auto 10px auto;
             border-radius: 8px;
             border: 2px solid #475569;
@@ -109,17 +112,18 @@
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 12px;
         }
 
+        /* Μεγαλύτερα και πιο άνετα κουτιά για τις 4 εικόνες/απαντήσεις */
         .option {
             background: #334155;
             padding: 8px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.1rem;
             position: relative;
-            min-height: 120px; /* Ιδανικό ύψος για να χωράνε άνετα οι εικόνες */
+            min-height: 145px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -158,7 +162,7 @@
 
         .timer-container {
             width: 100%;
-            max-width: 650px;
+            max-width: 700px;
             background: #334155;
             height: 10px;
             border-radius: 5px;
@@ -178,6 +182,18 @@
             color: #f59e0b;
             font-weight: bold;
             margin-bottom: 2px;
+        }
+
+        /* Οθόνη Εξήγησης */
+        #explanationSection {
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px solid #3b82f6;
+            box-sizing: border-box;
         }
 
         /* Μήνυμα Παύσης στην TV */
@@ -211,6 +227,7 @@
             color: #38bdf8;
             border-bottom: 2px solid #334155;
             padding-bottom: 10px;
+            margin-top: 0;
         }
 
         .player-row {
@@ -373,7 +390,7 @@
                     if (!imgTag) {
                         imgTag = document.createElement('img');
                         imgTag.className = 'opt-img';
-                        imgTag.style.cssText = 'width: 100%; height: 110px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
+                        imgTag.style.cssText = 'width: 100%; height: 125px; border-radius: 8px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;

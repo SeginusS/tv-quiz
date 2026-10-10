@@ -277,6 +277,12 @@
                     <div id="optC" class="option"><span>C: ...</span><div class="avatars-container" id="avatarsC"></div></div>
                     <div id="optD" class="option"><span>D: ...</span><div class="avatars-container" id="avatarsD"></div></div>
                 </div>
+
+                <div id="explanationBox" style="display: none; margin-top: 20px; padding: 15px; background: #0f172a; border-radius: 12px; border: 2px solid #3b82f6; text-align: center;">
+                    <img id="expImage" src="" alt="" style="max-height: 150px; max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: none; object-fit: contain;">
+                    <h3 style="color: #38bdf8; margin: 0 0 5px 0; font-size: 1.1rem;">💡 Εξήγηση Απάντησης:</h3>
+                    <p id="expText" style="color: #e2e8f0; font-size: 1rem; margin: 0;"></p>
+                </div>
             </div>
         </div>
 
@@ -315,6 +321,9 @@
             document.getElementById('questionSection').style.display = 'block';
             document.getElementById('sidebar').style.display = 'flex';
             document.getElementById('pauseOverlay').style.display = 'none';
+            // Κρύβουμε την εξήγηση και δείχνουμε κανονικά τις επιλογές στην αρχή της ερώτησης
+            document.getElementById('explanationBox').style.display = 'none';
+            document.getElementById('optionsGridContainer').style.display = 'grid';
 
             document.getElementById('qTitle').textContent = `Ερώτηση ${data.questionNum}/${data.total} (${data.levelName}) — ⭐ ${data.points} πόντοι`;
             document.getElementById('qText').textContent = data.question;
@@ -411,6 +420,21 @@
         socket.on('reveal-answer', (data) => {
             document.getElementById('pauseOverlay').style.display = 'none';
             document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
+
+            // Εμφάνιση εξήγησης και προαιρετικής εικόνας εξήγησης
+            document.getElementById('expText').textContent = data.explanation;
+            const expImg = document.getElementById('expImage');
+            if (data.explanationImageUrl) {
+                expImg.src = data.explanationImageUrl;
+                expImg.style.display = 'block';
+                expImg.style.margin = '0 auto 10px auto';
+            } else {
+                expImg.style.display = 'none';
+            }
+
+            // Προαιρετικά: Αν θες να κρύβονται τα κουτιά επιλογών και να φαίνεται καθαρά η εξήγηση
+            // document.getElementById('optionsGridContainer').style.display = 'none'; 
+            document.getElementById('explanationBox').style.display = 'block';
 
             for (let id in data.answersState) {
                 const ansObj = data.answersState[id];

@@ -107,7 +107,10 @@ const questionsByLevel = {
   "1%": [
       {
           question: "[1%] Ποια ημερομηνία του αιώνα που διανύουμε κρύβεται στους παρακάτω αριθμούς;", imageUrl: "https://lh3.googleusercontent.com/d/1Jb1NENnidiNVZ2viY3vcY2TTMq12oM2D",
-          options: { A: "2-2-22", B: "2-2-22", C: "2-2-25", D: "5-2-22" }, correct: "D"
+          options: { A: "2-2-22", B: "2-5-22", C: "2-2-25", D: "5-2-22" },
+          correct: "D",
+          explanation: "5-2-22. Μόνο με αυτή την λογική προκύπτει ημερομηνία του αιώνα που διανύουμε, δηλαδή 5 δυάρια και 20 εικοσιδυάρια, δηλαδή 5 2 και 20 22 άρα 5-2-22",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/14NVCq_dzFj5WPGeJL6lL-0ao727DaJ20" // Προαιρετικό
       }
   ]
 };
@@ -238,14 +241,16 @@ io.on('connection', (socket) => {
           clearInterval(room.timer);
           
           io.to(roomId).emit('reveal-answer', {
-            correct: q.correct,
-            playersList: Object.values(room.players),
-            answersState: room.answersState
+              correct: q.correct,
+              explanation: q.explanation || "Η σωστή απάντηση αποκαλύφθηκε!",
+              explanationImageUrl: q.explanationImageUrl || "",
+              playersList: Object.values(room.players),
+              answersState: room.answersState
           });
 
           room.autoAdvanceTimer = setTimeout(() => {
             loadNextQuestion(roomId);
-          }, 5000);
+          }, 10000);
         }
       }, 1000);
 

@@ -76,22 +76,39 @@ const questionsByLevel = {
       }
   ],
   "40%": [
-    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνa", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" }
+    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" }
   ],
   "30%": [
-    { question: "[30%] Πόσο κάνει 3 + 3 x 3 - 3;", imageUrl: "", options: { A: "15", B: "9", C: "6", D: "12" }, correct: "C" }
+      {
+          question: "[30%] Ποια από τις εικόνες ταιριάζει να συνεχίσει την παραπάνω ακολουθία; ", imageUrl: "https://lh3.googleusercontent.com/d/181H0HPnOHwX-MpWhZCPBaQaocXN7ItG-",
+          options: {
+              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1l6HBwJ5XdrsdP3HWPxQcovXGN5H1r42S" },
+              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1zlpTCHF49dcF3jCt7-JOfUfAoSG3mFBA" },
+              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1sw7uFR3DtpMnNJ8UE_JTVYTLNebZm7_o" },
+              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1sDzJCshMGvdFoAt2Z64YozqkhddSERJ8" }
+          },
+          correct: "A"
+      }
   ],
   "20%": [
-    { question: "[20%] Ποιο κουτί ζυγίζει περισσότερο;", imageUrl: "", options: { A: "Κουτί Α", B: "Κουτί Β", C: "Κουτί Γ", D: "Έχουν ίδιο βάρος" }, correct: "D" }
+      {
+          question: "[20%] Ο Μάριος είναι ναυτικός και γύρισε με καράβι από τον Καναδά. Ταξίδεψε έπειτα με λεωφορείο στη Λεπτοκαρυά και μετά με τρένο μέχρι τα Τρίκαλα. Όταν φτάσει στην Αθήνα, σύμφωνα με την λογική των διαδρομών που έκανε, σε ποια περιοχή θα πάει με το ταξί;", imageUrl: "",
+          options: { A: "Ταύρο", B: "Γαλάτσι", C: "Φάληρο", D: "Κουκάκι" },
+          correct: "A"
+      }
   ],
   "10%": [
-    { question: "[10%] Πόσα τρίγωνα υπάρχουν στη γωνία;", imageUrl: "", options: { A: "5", B: "7", C: "9", D: "11" }, correct: "C" }
+      { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86", 
+      options: { A: "6", B: "3", C: "9", D: "5" }, correct: "D" }
   ],
   "5%": [
-    { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Τ, Π, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Μ" }, correct: "A" }
+    { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" }
   ],
   "1%": [
-    { question: "[1% - Η ΤΕΛΙΚΗ ΕΡΩΤΗΣΗ] Ποιος είναι ο μοναδικός αριθμός που γράφεται με τόσα γράμματα όσα και η αξία του;", imageUrl: "", options: { A: "Ένα (3)", B: "Δύο (3)", C: "Τρία (4)", D: "Τέσσερα (7)" }, correct: "D" }
+      {
+          question: "[1%] Ποια ημερομηνία του αιώνα που διανύουμε κρύβεται στους παρακάτω αριθμούς;", imageUrl: "https://lh3.googleusercontent.com/d/1Jb1NENnidiNVZ2viY3vcY2TTMq12oM2D",
+          options: { A: "2-2-22", B: "2-2-22", C: "2-2-25", D: "5-2-22" }, correct: "D"
+      }
   ]
 };
 

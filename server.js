@@ -27,8 +27,8 @@ const questionsByLevel = {
       B: { type: "image", value: "https://thumbs.dreamstime.com/b/none-188018600.jpg"}, 
       C: { type: "image", value: "https://www.tanea.gr/wp-content/uploads/2011/04/pig.jpg"},
       D: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10"} 
-    },
-    correct: "D"
+          },
+          correct: "D"
   }
 
   ],
@@ -48,7 +48,10 @@ const questionsByLevel = {
   "70%": [
       {
           question: "[70%] Ποιο από τα παρακάτω ζώα δεν υπάρχει στον πίνακα;", imageUrl: "https://lh3.googleusercontent.com/d/1Qki65WHQPQyC7hXbxVEJCLuPIdfU9v7u",
-          options: { A: "Σκύλος", B: "Γάτα", C: "Λιοντάρι", D: "Ασβός" }, correct: "C"
+          options: { A: "Σκύλος", B: "Γάτα", C: "Λιοντάρι", D: "Ασβός" },
+          correct: "C",
+          explanation: "Στον πίνακα δεν υπάρχει το Λιοντάρι",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/1yp6Q7N20NVZiXZkrxvrOgKwvpFy-dfWp" // Προαιρετικό
       }
   ],
   "60%": [
@@ -60,7 +63,9 @@ const questionsByLevel = {
               C: { type: "image", value: "https://lh3.googleusercontent.com/d/1Ya-OvBd0ZFdboqZXs60baLfn7NxGCASF" },
               D: { type: "image", value: "https://lh3.googleusercontent.com/d/1ixDy8xLir9lup9SrdhMC7VB-FqCcm5k3" }
           },
-          correct: "A"
+          correct: "A",
+          explanation: "Κάθε γλειφιτζούρι στην επάνω σειρά έχει από κάτω το καθρέπτισμα του",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/1sDvbmPeC1C57F52FOHdqbggdHeEI5vV8" // Προαιρετικό
       }
   ],
   "50%": [
@@ -72,7 +77,8 @@ const questionsByLevel = {
               C: { type: "image", value: "https://lh3.googleusercontent.com/d/1J3CPQwzI-Fe7dz_CJVfVRgdAbLrzbneY" },
               D: { type: "image", value: "https://lh3.googleusercontent.com/d/1tXm8YWoQVdnwWMGCaTJsFLq4mO1YvKfd" }
           },
-          correct: "C"
+          correct: "C",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/1q0wYIkWknt56MxARzMePpWaOtDJ9EF8O" // Προαιρετικό
       }
   ],
   "40%": [
@@ -87,19 +93,25 @@ const questionsByLevel = {
               C: { type: "image", value: "https://lh3.googleusercontent.com/d/1sw7uFR3DtpMnNJ8UE_JTVYTLNebZm7_o" },
               D: { type: "image", value: "https://lh3.googleusercontent.com/d/1sDzJCshMGvdFoAt2Z64YozqkhddSERJ8" }
           },
-          correct: "A"
+          correct: "A",
+          explanation: "Η λέξη που αναγράφεται σε κάθε κουτί καθορίζει το χρώμα που είναι βαμμένο το επόμενο κουτί. Το χρώμα με το οποίο είναι γραμμένη η λέξη σε κάθε κουτί καθορίζει τη λέξη που αναγράφεται σε κάθε επόμενο κουτί."
       }
   ],
   "20%": [
       {
           question: "[20%] Ο Μάριος είναι ναυτικός και γύρισε με καράβι από τον Καναδά. Ταξίδεψε έπειτα με λεωφορείο στη Λεπτοκαρυά και μετά με τρένο μέχρι τα Τρίκαλα. Όταν φτάσει στην Αθήνα, σύμφωνα με την λογική των διαδρομών που έκανε, σε ποια περιοχή θα πάει με το ταξί;", imageUrl: "",
           options: { A: "Ταύρο", B: "Γαλάτσι", C: "Φάληρο", D: "Κουκάκι" },
-          correct: "A"
+          correct: "A",
+          explanation: "Σε κάθε ζεύγος μέσο μεταφοράς-περιοχή, τα δύο πρώτα γράμματα του μέσου μεταφοράς είναι ίδια με τα δύο πρώτα γράμματα της περιοχής.",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/15YdexKnc0R6X_PE3EQCQTwVbROa8Zt_z" // Προαιρετικό
       }
   ],
   "10%": [
       { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86", 
-      options: { A: "6", B: "3", C: "9", D: "5" }, correct: "D" }
+          options: { A: "6", B: "3", C: "9", D: "5" },
+          correct: "D",
+          explanationImageUrl: "https://lh3.googleusercontent.com/d1iTpVog097Mwvfheer_pVcOPYd30xLdZ5"
+      }
   ],
   "5%": [
     { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" }

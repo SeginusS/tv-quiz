@@ -17,12 +17,15 @@
 
         .main-content {
             flex: 1;
-            padding: 30px;
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            box-sizing: border-box;
+            max-height: 100vh;
+            overflow: hidden;
         }
 
         .sidebar {
@@ -84,10 +87,10 @@
 
         .game-card {
             background: #1e293b;
-            padding: 20px;
+            padding: 15px 20px;
             border-radius: 16px;
             width: 100%;
-            max-width: 700px;
+            max-width: 650px;
             box-sizing: border-box;
             position: relative;
         }
@@ -95,9 +98,9 @@
         .question-img {
             display: block;
             max-width: 100%;
-            max-height: 200px;
-            margin: 0 auto 15px auto;
-            border-radius: 10px;
+            max-height: 130px; /* Μειώθηκε ελαφρώς για να χωράνε όλα */
+            margin: 0 auto 10px auto;
+            border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
         }
@@ -105,17 +108,17 @@
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .option {
             background: #334155;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 1.1rem;
             position: relative;
-            min-height: 160px;
+            min-height: 130px; /* Μειώθηκε το ύψος για να μη βγαίνουν εκτός */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -368,7 +371,7 @@
                     if (!imgTag) {
                         imgTag = document.createElement('img');
                         imgTag.className = 'opt-img';
-                        imgTag.style.cssText = 'width: 100%; height: 160px; border-radius: 8px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
+                        imgTag.style.cssText = 'width: 100%; height: 110px; border-radius: 6px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;

@@ -39,7 +39,7 @@ const questionsByLevel = {
               A: { type: "image", value: "https://lh3.googleusercontent.com/d/1aerxga6oUgIm8gEizsH1RzZlcGQsawGq" },
               B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GRqDLrV6oH4iMiDsD0OJ-JvQN0gvCrM5" },
               C: { type: "image", value: "https://lh3.googleusercontent.com/d/1pWlajznw-vwhVJCNLIEnGEYTA80X6rvZ" },
-              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1Qn2Ed6_5f75u4G90FPBwWt0LZYCrXrJK" }
+              D: { type: "image", value: "/eikones/screenshot-2026-10-10-001018.jpg"},
           },
           correct: "D"
       }

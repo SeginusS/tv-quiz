@@ -20,7 +20,7 @@ const pointsPerLevel = {
 const questionsByLevel = {
   "90%": [
 {
-    question: "[90%] Ποια από τις τέσσετις μύτες δεν αναπνέει;" ,
+    question: "[90%] Ποια από τις τέσσερις μύτες δεν αναπνέει;" ,
     imageUrl: "",
     options: { 
       A: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10"},
@@ -110,7 +110,7 @@ const questionsByLevel = {
       { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86", 
           options: { A: "6", B: "3", C: "9", D: "5" },
           correct: "D",
-          explanationImageUrl: "https://lh3.googleusercontent.com/d1iTpVog097Mwvfheer_pVcOPYd30xLdZ5"
+          explanationImageUrl: "https://lh3.googleusercontent.com/d/1iTpVog097Mwvfheer_pVcOPYd30xLdZ5"
       }
   ],
   "5%": [
@@ -127,17 +127,70 @@ const questionsByLevel = {
   ]
 };
 
+// Ο παίκτης που στέλνει την εντολή είναι ο διαχειριστής (host) του δωματίου;
+function isHost(room, socket) {
+  return !!(room && room.players[socket.id] && room.players[socket.id].isHost);
+}
+
+// Κλείνει ένα δωμάτιο: ειδοποιεί όλους (τα κινητά πετάγονται στη φόρμα εισόδου)
+// και το σβήνει από τη μνήμη.
+function closeRoom(roomId) {
+  const room = rooms[roomId];
+  if (!room) return;
+  clearInterval(room.timer);
+  clearTimeout(room.autoAdvanceTimer);
+  clearTimeout(room.tvGraceTimer);
+  io.to(roomId).emit('room-closed');
+  io.in(roomId).socketsLeave(roomId);
+  delete rooms[roomId];
+}
+
+// Στέλνει στην τηλεόραση την τρέχουσα κατάσταση του δωματίου
+function sendTvState(socket, roomId) {
+  const room = rooms[roomId];
+  socket.emit('room-created', roomId);
+  socket.emit('update-players', { playersList: Object.values(room.players) });
+
+  // Αν τρέχει ερώτηση, η τηλεόραση την ξαναδείχνει
+  if (room.acceptingAnswers && room.lastQuestion) {
+    socket.emit('show-question', room.lastQuestion);
+    socket.emit('timer-update', room.timeLeft);
+    if (room.isPaused) socket.emit('game-paused');
+  }
+}
+
+// Πόσο περιμένουμε μια τηλεόραση που αποσυνδέθηκε πριν κλείσουμε το δωμάτιο (ms)
+const TV_GRACE_MS = 60000;
+
 io.on('connection', (socket) => {
-  socket.on('create-room', () => {
-    const roomId = Math.floor(1000 + Math.random() * 9000).toString();
-    rooms[roomId] = { 
-      hostSocket: socket.id, 
+  // Η τηλεόραση στέλνει ένα μόνιμο αναγνωριστικό (tvToken). Αν η ίδια τηλεόραση
+  // είχε ήδη δωμάτιο (π.χ. έκανε refresh), το παλιό κλείνει και τα κινητά του
+  // πετάγονται στη φόρμα εισόδου. Η τηλεόραση παίρνει ΝΕΟ κωδικό.
+  socket.on('create-room', (tvToken) => {
+    if (tvToken) {
+      for (const id of Object.keys(rooms)) {
+        if (rooms[id].tvToken === tvToken) closeRoom(id);
+      }
+    }
+
+    let roomId;
+    do {
+      roomId = Math.floor(1000 + Math.random() * 9000).toString();
+    } while (rooms[roomId]);
+
+    rooms[roomId] = {
+      tvToken: tvToken || null,
+      tvSocket: socket.id,
+      tvGraceTimer: null,
+      hostSocket: socket.id,
       players: {}, 
       currentQuestionIndex: -1,
       timer: null,
       autoAdvanceTimer: null,
       timeLeft: 30,
       isPaused: false,
+      acceptingAnswers: false,
+      lastQuestion: null,
       answersState: {},
       selectedQuestions: [],
       usedQuestionsMap: {}
@@ -147,8 +200,33 @@ io.on('connection', (socket) => {
       rooms[roomId].usedQuestionsMap[lvl] = [];
     });
 
+    socket.data.tvRoom = roomId;
     socket.join(roomId);
     socket.emit('room-created', roomId);
+  });
+
+  // Η τηλεόραση έχασε στιγμιαία τη σύνδεση (ΟΧΙ refresh) και ξαναγυρίζει στο ίδιο δωμάτιο
+  socket.on('tv-reconnect', ({ roomId, tvToken } = {}) => {
+    const room = rooms[roomId];
+    if (!room || !tvToken || room.tvToken !== tvToken) {
+      socket.emit('room-gone');
+      return;
+    }
+    clearTimeout(room.tvGraceTimer);
+    room.tvSocket = socket.id;
+    socket.data.tvRoom = roomId;
+    socket.join(roomId);
+    sendTvState(socket, roomId);
+  });
+
+  // Αν χαθεί η τηλεόραση και δεν γυρίσει μέσα στο όριο, το δωμάτιο κλείνει
+  socket.on('disconnect', () => {
+    const roomId = socket.data.tvRoom;
+    const room = rooms[roomId];
+    if (room && room.tvSocket === socket.id) {
+      clearTimeout(room.tvGraceTimer);
+      room.tvGraceTimer = setTimeout(() => closeRoom(roomId), TV_GRACE_MS);
+    }
   });
 
   socket.on('join-room', ({ roomId, playerName }) => {
@@ -166,19 +244,33 @@ io.on('connection', (socket) => {
 
       if (existingSocketId) {
         room.players[socket.id] = room.players[existingSocketId];
-        if (existingSocketId !== socket.id) delete room.players[existingSocketId];
+        if (existingSocketId !== socket.id) {
+          delete room.players[existingSocketId];
+          // Μεταφορά της απάντησης που ίσως είχε ήδη δώσει, ώστε να μην απαντήσει ξανά
+          if (room.answersState[existingSocketId]) {
+            room.answersState[socket.id] = room.answersState[existingSocketId];
+            delete room.answersState[existingSocketId];
+          }
+        }
         if (room.hostSocket === existingSocketId) {
           room.hostSocket = socket.id;
           room.players[socket.id].isHost = true;
         }
       } else {
-        const isHost = Object.keys(room.players).length === 0;
-        room.players[socket.id] = { name: playerName, score: 0, isHost: isHost };
-        if (isHost) room.hostSocket = socket.id;
+        const isHostPlayer = Object.keys(room.players).length === 0;
+        room.players[socket.id] = { name: playerName, score: 0, isHost: isHostPlayer };
+        if (isHostPlayer) room.hostSocket = socket.id;
       }
 
       io.to(roomId).emit('update-players', { playersList: Object.values(room.players) });
       socket.emit('joined-successfully', { roomId, playerName, isHost: room.players[socket.id].isHost });
+
+      // Ενημέρωση του κινητού για την τρέχουσα κατάσταση (χρήσιμο σε επανασύνδεση)
+      socket.emit('sync-state', {
+        questionActive: !!room.acceptingAnswers,
+        paused: !!room.isPaused,
+        answered: !!room.answersState[socket.id]
+      });
     } else {
       socket.emit('error-message', 'Το δωμάτιο δεν βρέθηκε!');
     }
@@ -186,7 +278,10 @@ io.on('connection', (socket) => {
 
   socket.on('start-game', (roomId) => {
     const room = rooms[roomId];
-    if (!room) return;
+    if (!isHost(room, socket)) return;
+
+    // Αν το παιχνίδι ήδη τρέχει, αγνοούμε (π.χ. διπλό πάτημα)
+    if (room.currentQuestionIndex >= 0 && room.currentQuestionIndex < room.selectedQuestions.length) return;
 
     for (let id in room.players) room.players[id].score = 0;
     room.selectedQuestions = [];
@@ -223,13 +318,14 @@ io.on('connection', (socket) => {
     clearInterval(room.timer);
     clearTimeout(room.autoAdvanceTimer);
     room.isPaused = false;
+    room.acceptingAnswers = false;
 
     room.currentQuestionIndex++;
     if (room.currentQuestionIndex < room.selectedQuestions.length) {
       const q = room.selectedQuestions[room.currentQuestionIndex];
       room.answersState = {};
 
-      io.to(roomId).emit('show-question', {
+      const payload = {
         questionNum: room.currentQuestionIndex + 1,
         total: room.selectedQuestions.length,
         levelName: q.levelName,
@@ -237,9 +333,13 @@ io.on('connection', (socket) => {
         question: q.question,
         imageUrl: q.imageUrl,
         options: q.options
-      });
-
+      };
+      room.lastQuestion = payload;
       room.timeLeft = 30;
+      room.acceptingAnswers = true;
+
+      io.to(roomId).emit('show-question', payload);
+
       room.timer = setInterval(() => {
         if (room.isPaused) return; // Αν είναι σε παύση, ο χρόνος δεν μετράει
 
@@ -251,6 +351,7 @@ io.on('connection', (socket) => {
 
         if (room.timeLeft <= 0 || (totalPlayers > 0 && answeredCount >= totalPlayers)) {
           clearInterval(room.timer);
+          room.acceptingAnswers = false; // Από εδώ και πέρα δεν δεχόμαστε άλλες απαντήσεις
           
           io.to(roomId).emit('reveal-answer', {
               correct: q.correct,
@@ -283,37 +384,42 @@ io.on('connection', (socket) => {
 
   socket.on('pause-game', (roomId) => {
     const room = rooms[roomId];
-    if (!room) return;
+    // Μόνο ο host, και μόνο όσο τρέχει ερώτηση (όχι στην αποκάλυψη/εξήγηση)
+    if (!isHost(room, socket) || !room.acceptingAnswers) return;
     room.isPaused = true;
     io.to(roomId).emit('game-paused');
   });
 
   socket.on('resume-game', (roomId) => {
     const room = rooms[roomId];
-    if (!room) return;
+    if (!isHost(room, socket) || !room.isPaused) return;
     room.isPaused = false;
     io.to(roomId).emit('game-resumed');
   });
 
   socket.on('terminate-game', (roomId) => {
     const room = rooms[roomId];
-    if (!room) return;
+    if (!isHost(room, socket)) return;
     clearInterval(room.timer);
     clearTimeout(room.autoAdvanceTimer);
     room.currentQuestionIndex = -1;
+    room.isPaused = false;
+    room.acceptingAnswers = false;
     for (let id in room.players) room.players[id].score = 0;
     io.to(roomId).emit('game-terminated', { playersList: Object.values(room.players) });
   });
 
   socket.on('submit-answer', ({ roomId, answer }) => {
     const room = rooms[roomId];
-    if (!room || room.isPaused) return; // Αν είναι σε παύση, απορρίπτεται η απάντηση
+    // Απορρίπτεται αν: δεν υπάρχει δωμάτιο, είναι σε παύση, ή η ερώτηση έχει ήδη κλείσει
+    if (!room || room.isPaused || !room.acceptingAnswers) return;
+    if (!['A', 'B', 'C', 'D'].includes(answer)) return;
 
     const qIndex = room.currentQuestionIndex;
     const currentQ = room.selectedQuestions[qIndex];
     const player = room.players[socket.id];
 
-    if (player && !room.answersState[socket.id]) {
+    if (currentQ && player && !room.answersState[socket.id]) {
       const isCorrect = (answer === currentQ.correct);
       if (isCorrect) player.score += currentQ.points;
 

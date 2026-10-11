@@ -2,56 +2,67 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>1% of people - TV</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
             font-family: system-ui, sans-serif;
             background: #0f172a;
             color: #fff;
-            margin: 0;
             display: flex;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
         }
 
+        /* Ασφαλές περιθώριο για overscan των τηλεοράσεων */
         .main-content {
             flex: 1;
-            padding: 10px 20px;
+            min-width: 0;
+            min-height: 0;
+            padding: 2.5vh 2vw;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-sizing: border-box;
-            height: 100vh;
+            height: 100%;
             overflow: hidden;
         }
 
         .sidebar {
-            width: 320px;
+            width: clamp(220px, 20vw, 380px);
+            flex-shrink: 0;
             background: #1e293b;
             border-left: 2px solid #334155;
-            padding: 20px;
+            padding: 2vh 1.2vw;
             display: none;
             flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
+            height: 100%;
+            overflow: hidden;
         }
 
         .lobby-title {
             color: #60a5fa;
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
+            margin: 0 0 1vh 0;
+            font-size: 5vh;
         }
 
         .code-box {
             background: #1e293b;
-            padding: 10px 25px;
+            padding: 1.2vh 2vw;
             border-radius: 12px;
             border: 2px solid #3b82f6;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            margin-bottom: 2vh;
+            font-size: 3.2vh;
         }
 
         .room-code {
@@ -62,11 +73,11 @@
 
         .lobby-players-box {
             background: #1e293b;
-            padding: 20px;
+            padding: 2vh 2vw;
             border-radius: 16px;
             width: 100%;
-            max-width: 500px;
-            margin-top: 15px;
+            max-width: 700px;
+            margin-top: 1.5vh;
             border: 2px solid #334155;
             text-align: center;
         }
@@ -76,75 +87,174 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 1.5vh;
         }
 
         .player-tag {
             background: #334155;
-            padding: 8px 16px;
+            padding: 0.8vh 1.2vw;
             border-radius: 20px;
-            font-size: 1.1rem;
+            font-size: 2.4vh;
             border: 1px solid #475569;
         }
 
-        /* Κάρτα παιχνιδιού */
+        /* ===== Ενότητα ερώτησης: γεμίζει ακριβώς το διαθέσιμο ύψος ===== */
+        #questionSection {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1500px;
+            height: 100%;
+            min-height: 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .timer-text {
+            flex: 0 0 auto;
+            font-size: 3vh;
+            line-height: 1.1;
+            color: #f59e0b;
+            font-weight: bold;
+            margin-bottom: 0.4vh;
+        }
+
+        .timer-container {
+            flex: 0 0 auto;
+            width: 100%;
+            background: #334155;
+            height: 1vh;
+            min-height: 6px;
+            border-radius: 4px;
+            margin-bottom: 0.8vh;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 100%;
+            background: #f59e0b;
+            transition: width 1s linear;
+        }
+
+        #qTitle {
+            flex: 0 0 auto;
+            margin: 0.4vh 0 0.8vh 0;
+            font-size: 2.4vh;
+            color: #94a3b8;
+        }
+
+        /* Κάρτα παιχνιδιού: παίρνει όλο το υπόλοιπο ύψος */
         .game-card {
+            flex: 1 1 0;
+            min-height: 0;
             background: #1e293b;
-            padding: 15px 20px;
+            padding: 1.5vh 1.2vw;
             border-radius: 14px;
             width: 100%;
-            max-width: 800px;
-            max-height: 88vh;
-            box-sizing: border-box;
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 1.2vh;
+            overflow: hidden;
         }
 
         .question-img {
             display: block;
+            flex: 0 0 auto;
             max-width: 100%;
-            max-height: 140px;
-            margin: 0 auto 8px auto;
+            max-height: 22vh;
+            margin: 0 auto;
             border-radius: 8px;
             border: 2px solid #475569;
             object-fit: contain;
+            min-height: 0;
+        }
+
+        #qText {
+            flex: 0 0 auto;
+            font-size: 3.2vh;
+            margin: 0;
+            line-height: 1.2;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 8px;
+            gap: 1.4vh 1.2vw;
+            flex: 0 0 auto;
+            min-height: 0;
         }
 
-        /* Βασικό κουτί (για κείμενο) */
+        /* Κουτί απάντησης (κείμενο) */
         .option {
             background: #334155;
-            padding: 10px;
+            padding: 1vh 1vw;
             border-radius: 12px;
-            font-size: 1.2rem;
+            font-size: 3vh;
             position: relative;
-            min-height: 70px;
+            min-height: 9vh;
+            min-width: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             border: 2px solid #475569;
-            box-sizing: border-box;
             text-align: center;
+            overflow: hidden;
         }
 
-        /* Ιδανικό, συμμετρικό ύψος για τα κουτιά-εικόνες ώστε να μην είναι στενόμακρες λωρίδες */
+        .opt-badge {
+            position: absolute;
+            top: 0.6vh;
+            left: 0.5vw;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            padding: 0.2vh 0.5vw;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 2vh;
+            z-index: 2;
+        }
+
+        /* Εικόνες στις απαντήσεις: τα κουτιά μοιράζονται το ύψος */
+        .game-card.image-options-mode .options-grid,
+        .game-card.both-images-mode .options-grid {
+            flex: 1 1 0;
+            grid-template-rows: 1fr 1fr;
+        }
+
         .game-card.image-options-mode .option,
         .game-card.both-images-mode .option {
-            min-height: 165px;
-            padding: 6px;
+            min-height: 0;
+            padding: 0.6vh;
         }
 
+        .opt-img {
+            flex: 1 1 0;
+            min-height: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+            display: block;
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Όταν υπάρχει και μεγάλη εικόνα ερώτησης, μοιράζονται το ύψος */
         .game-card.both-images-mode .question-img {
-            max-height: 110px;
+            flex: 1.1 1 0;
+            max-height: none;
+            width: auto;
+        }
+
+        .game-card.both-images-mode .options-grid {
+            flex: 1.6 1 0;
+        }
+
+        .game-card.both-images-mode #qText {
+            font-size: 2.8vh;
         }
 
         .correct-ans {
@@ -157,14 +267,15 @@
             gap: 4px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 4px;
-            max-height: 30px;
+            margin-top: 0.4vh;
+            max-height: 4vh;
             overflow: hidden;
+            flex: 0 0 auto;
         }
 
         .player-bubble {
-            width: 26px;
-            height: 26px;
+            width: 3.4vh;
+            height: 3.4vh;
             background: #3b82f6;
             color: white;
             border-radius: 50%;
@@ -172,44 +283,22 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 1.8vh;
             border: 2px solid #fff;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
-        .timer-container {
-            width: 100%;
-            max-width: 800px;
-            background: #334155;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            overflow: hidden;
-        }
-
-        .timer-bar {
-            width: 100%;
-            height: 100%;
-            background: #f59e0b;
-            transition: width 1s linear;
-        }
-
-        .timer-text {
-            font-size: 1.2rem;
-            color: #f59e0b;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-
         #explanationSection {
+            display: none;
             width: 100%;
-            max-width: 800px;
+            max-width: 1300px;
+            max-height: 100%;
             text-align: center;
             background: #1e293b;
-            padding: 25px;
+            padding: 3vh 2vw;
             border-radius: 14px;
             border: 2px solid #3b82f6;
-            box-sizing: border-box;
+            overflow: hidden;
         }
 
         #pauseOverlay {
@@ -227,40 +316,47 @@
             border-radius: 14px;
         }
 
-            #pauseOverlay h2 {
-                color: #f59e0b;
-                font-size: 3rem;
-                margin: 0;
-                border: 4px dashed #f59e0b;
-                padding: 20px 40px;
-                border-radius: 14px;
-                background: #1e293b;
-            }
+        #pauseOverlay h2 {
+            color: #f59e0b;
+            font-size: 6vh;
+            margin: 0;
+            border: 4px dashed #f59e0b;
+            padding: 3vh 3vw;
+            border-radius: 14px;
+            background: #1e293b;
+        }
 
         .sidebar h2 {
-            font-size: 1.2rem;
+            font-size: 2.6vh;
             color: #38bdf8;
             border-bottom: 2px solid #334155;
-            padding-bottom: 8px;
+            padding-bottom: 1vh;
             margin-top: 0;
+        }
+
+        #scoreboardList {
+            overflow: hidden;
+            min-height: 0;
         }
 
         .player-row {
             display: flex;
             justify-content: space-between;
             background: #334155;
-            padding: 8px 12px;
+            padding: 1vh 0.8vw;
             border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 1rem;
+            margin-bottom: 0.8vh;
+            font-size: 2.2vh;
         }
 
         .game-over-card {
             background: #1e293b;
-            padding: 25px;
+            padding: 3vh 2vw;
             border-radius: 14px;
             width: 100%;
-            max-width: 500px;
+            max-width: 800px;
+            max-height: 100%;
+            overflow: hidden;
             text-align: center;
             border: 2px solid #f59e0b;
         }
@@ -269,10 +365,10 @@
             display: flex;
             justify-content: space-between;
             background: #334155;
-            padding: 10px 15px;
+            padding: 1.2vh 1vw;
             border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            margin-bottom: 1vh;
+            font-size: 2.6vh;
             align-items: center;
         }
     </style>
@@ -280,20 +376,20 @@
 <body>
 
     <div class="main-content">
-        <div id="lobbySection" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <div id="lobbySection" style="text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%;">
             <h1 class="lobby-title">1% of people</h1>
             <div class="code-box">Κωδικός Δωματίου: <span id="roomCode" class="room-code">----</span></div>
-            <p style="font-size: 1.2rem; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί γίνεται ο διαχειριστής!</p>
+            <p style="font-size: 2.6vh; color: #94a3b8;">Ο πρώτος παίκτης που θα συνδεθεί γίνεται ο διαχειριστής!</p>
 
             <div class="lobby-players-box">
-                <h3 style="margin-top: 0; color: #38bdf8;">👥 Παίκτες που συνδέθηκαν:</h3>
+                <h3 style="margin-top: 0; font-size: 3vh; color: #38bdf8;">👥 Παίκτες που συνδέθηκαν:</h3>
                 <div id="lobbyPlayersList" class="connected-players-list">
                     <i style="color: #64748b;">Αναμονή παικτών...</i>
                 </div>
             </div>
         </div>
 
-        <div id="questionSection" style="display:none; width: 100%; max-width: 850px; text-align: center; position: relative;">
+        <div id="questionSection">
             <!-- Overlay Παύσης -->
             <div id="pauseOverlay">
                 <h2>⏸️ ΠΑΥΣΗ ⏸️</h2>
@@ -302,11 +398,11 @@
             <div id="timerText" class="timer-text">30</div>
             <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
 
-            <h2 id="qTitle" style="margin: 4px 0; font-size: 1.1rem; color: #94a3b8;">Ερώτηση</h2>
+            <h2 id="qTitle">Ερώτηση</h2>
 
             <div class="game-card">
                 <img id="qImage" class="question-img" src="" alt="" style="display:none;">
-                <h3 id="qText" style="font-size: 1.2rem; margin: 0 0 6px 0;"></h3>
+                <h3 id="qText"></h3>
 
                 <div class="options-grid" id="optionsGridContainer">
                     <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
@@ -318,15 +414,15 @@
         </div>
 
         <!-- Οθόνη Εξήγησης -->
-        <div id="explanationSection" style="display:none; width: 100%; max-width: 850px; text-align: center; background: #1e293b; padding: 25px; border-radius: 14px; border: 2px solid #3b82f6;">
-            <h2 style="color: #f59e0b; font-size: 1.8rem; margin-top: 0;">💡 Εξήγηση Απάντησης</h2>
-            <img id="expPageImage" src="" alt="" style="max-height: 240px; max-width: 100%; border-radius: 8px; margin: 10px auto; display: none; object-fit: contain; border: 2px solid #475569;">
-            <p id="expPageText" style="color: #e2e8f0; font-size: 1.2rem; line-height: 1.4; margin-top: 10px;"></p>
+        <div id="explanationSection">
+            <h2 style="color: #f59e0b; font-size: 4vh; margin-top: 0;">💡 Εξήγηση Απάντησης</h2>
+            <img id="expPageImage" src="" alt="" style="max-height: 40vh; max-width: 100%; border-radius: 8px; margin: 1vh auto; display: none; object-fit: contain; border: 2px solid #475569;">
+            <p id="expPageText" style="color: #e2e8f0; font-size: 2.8vh; line-height: 1.4; margin-top: 1vh;"></p>
         </div>
 
         <div id="gameOverSection" style="display:none; width: 100%; flex-direction: column; align-items: center;">
             <div class="game-over-card">
-                <h2 style="color: #f59e0b; font-size: 2rem; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
+                <h2 style="color: #f59e0b; font-size: 4.4vh; margin-top: 0;">🏆 Τελική Κατάταξη 🏆</h2>
                 <div id="finalScoreboardList"></div>
             </div>
         </div>
@@ -357,7 +453,7 @@
             document.getElementById('lobbySection').style.display = 'none';
             document.getElementById('gameOverSection').style.display = 'none';
             document.getElementById('explanationSection').style.display = 'none';
-            document.getElementById('questionSection').style.display = 'block';
+            document.getElementById('questionSection').style.display = 'flex';
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('pauseOverlay').style.display = 'none';
 
@@ -411,7 +507,6 @@
                 if (!badgeTag) {
                     badgeTag = document.createElement('div');
                     badgeTag.className = 'opt-badge';
-                    badgeTag.style.cssText = 'position: absolute; top: 4px; left: 6px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; z-index: 2;';
                     optElement.appendChild(badgeTag);
                 }
                 badgeTag.textContent = optLetter;
@@ -424,7 +519,6 @@
                         optElement.insertBefore(imgTag, optElement.firstChild);
                     }
                     imgTag.src = contentVal;
-                    imgTag.style.cssText = 'width: 100%; height: 125px; border-radius: 8px; object-fit: contain; display: block; background: rgba(0,0,0,0.2);';
                     imgTag.style.display = 'block';
                 } else {
                     spanTag.style.display = 'block';

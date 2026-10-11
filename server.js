@@ -35,10 +35,10 @@ const questionsByLevel = {
     question: "[90%] Τέσσερις άνθρωποι βρίσκονται μέσα στον λαβύρυνθο και προσπαθούν να φτάσουν στο κέντρο. Ποιος πηγαίνει λάθος;",
     imageUrl: "eikones/maze.jpg",
     options: {
-        A: A,
-        B: B,
-        C: C,
-        D: D,
+        A: "A",
+        B: "B",
+        C: "C",
+        D: "D",
     },
     correct: "B"
   }

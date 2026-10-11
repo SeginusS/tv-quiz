@@ -53,15 +53,19 @@
     const socket = io();
     let currentRoom = '';
     let hasAnswered = false;
+    let questionActive = false; // τρέχει ερώτηση αυτή τη στιγμή;
 
-    window.onload = function() {
+    // Τρέχει σε ΚΑΘΕ σύνδεση του socket: στην αρχή αλλά και όταν το κινητό
+    // ξαναβρεί δίκτυο ή ξυπνήσει από κλείδωμα οθόνης. Έτσι ξαναμπαίνει στο δωμάτιο
+    // και συνεχίζει να παίρνει ενημερώσεις.
+    socket.on('connect', () => {
       const savedName = localStorage.getItem('quiz_player_name');
       const savedRoom = localStorage.getItem('quiz_room_id');
       if (savedName && savedRoom) {
         currentRoom = savedRoom;
         socket.emit('join-room', { roomId: savedRoom, playerName: savedName });
       }
-    };
+    });
 
     function joinGame() {
       const name = document.getElementById('playerName').value.trim();
@@ -90,7 +94,50 @@
       }
     });
 
-    socket.on('error-message', (msg) => alert(msg));
+    // Η κατάσταση του παιχνιδιού μετά από (επανα)σύνδεση
+    socket.on('sync-state', (s) => {
+      questionActive = s.questionActive;
+      hasAnswered = s.answered;
+      if (!s.questionActive) return;
+
+      const grid = document.getElementById('buttonsGrid');
+      const status = document.getElementById('statusMsg');
+      if (s.paused) {
+        grid.classList.add('hidden');
+        status.textContent = '⏸️ ΤΟ ΠΑΙΧΝΙΔΙ ΕΙΣΕΛΘΕ ΣΕ ΠΑΥΣΗ';
+      } else if (s.answered) {
+        grid.classList.add('hidden');
+        status.textContent = 'Η απάντησή σας κλειδώθηκε! 🤫';
+      } else {
+        grid.classList.remove('hidden');
+        status.textContent = 'Επιλέξτε απάντηση!';
+      }
+    });
+
+    // Αν ο κωδικός δεν ισχύει πια, καθαρίζουμε τα αποθηκευμένα στοιχεία
+    // και γυρνάμε στη φόρμα εισόδου (αλλιώς θα ξαναδοκίμαζε σε κάθε σύνδεση)
+    socket.on('error-message', (msg) => {
+      localStorage.removeItem('quiz_player_name');
+      localStorage.removeItem('quiz_room_id');
+      document.getElementById('controllerSection').classList.add('hidden');
+      document.getElementById('joinSection').classList.remove('hidden');
+      alert(msg);
+    });
+
+    // Η τηλεόραση έκλεισε το δωμάτιο (π.χ. έκανε refresh ή σβήστηκε):
+    // γυρνάμε στη φόρμα εισόδου για να βάλει ο παίκτης τον νέο κωδικό
+    socket.on('room-closed', () => {
+      localStorage.removeItem('quiz_player_name');
+      localStorage.removeItem('quiz_room_id');
+      currentRoom = '';
+      hasAnswered = false;
+      questionActive = false;
+      document.getElementById('buttonsGrid').classList.add('hidden');
+      document.getElementById('controllerSection').classList.add('hidden');
+      document.getElementById('joinSection').classList.remove('hidden');
+      document.getElementById('roomInput').value = '';
+      alert('Το δωμάτιο έκλεισε. Βάλε τον νέο κωδικό που εμφανίζεται στην τηλεόραση.');
+    });
 
     function startGame() {
       socket.emit('start-game', currentRoom);
@@ -110,6 +157,7 @@
 
     socket.on('show-question', () => {
       hasAnswered = false;
+      questionActive = true;
       document.getElementById('statusMsg').textContent = 'Επιλέξτε απάντηση!';
       document.getElementById('buttonsGrid').classList.remove('hidden');
     });
@@ -130,13 +178,17 @@
     });
 
     socket.on('game-resumed', () => {
-      if (!hasAnswered) {
+      // Τα κουμπιά ξαναεμφανίζονται μόνο αν τρέχει ερώτηση και ο παίκτης δεν έχει απαντήσει
+      if (questionActive && !hasAnswered) {
         document.getElementById('buttonsGrid').classList.remove('hidden');
+        document.getElementById('statusMsg').textContent = '▶️ Το παιχνίδι συνεχίζεται κανονικά!';
+      } else if (hasAnswered) {
+        document.getElementById('statusMsg').textContent = 'Η απάντησή σας κλειδώθηκε! 🤫';
       }
-      document.getElementById('statusMsg').textContent = '▶️ Το παιχνίδι συνεχίζεται κανονικά!';
     });
 
     socket.on('game-terminated', () => {
+      questionActive = false;
       document.getElementById('buttonsGrid').classList.add('hidden');
       document.getElementById('statusMsg').textContent = '🛑 Ο διαχειριστής τερμάτισε το παιχνίδι.';
       const actionBtn = document.getElementById('actionBtn');
@@ -144,11 +196,13 @@
     });
 
     socket.on('reveal-answer', () => {
+      questionActive = false;
       document.getElementById('buttonsGrid').classList.add('hidden');
       document.getElementById('statusMsg').textContent = 'Ο χρόνος έληξε! Δείτε τα αποτελέσματα στην τηλεόραση.';
     });
 
     socket.on('game-over', () => {
+      questionActive = false;
       document.getElementById('buttonsGrid').classList.add('hidden');
       document.getElementById('statusMsg').textContent = '🏆 Το παιχνίδι τελείωσε!';
       

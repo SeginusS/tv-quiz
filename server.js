@@ -36,9 +36,9 @@ const questionsByLevel = {
   "80%": [
       {
           question: "[80%] Ποιος θα ήταν αδύνατο να παραμείνει στην θέση που φωτογραφήθηκε για παραπάνω από 1 δευτερόλεπτο;", imageUrl: "", options: {
-              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1aerxga6oUgIm8gEizsH1RzZlcGQsawGq" },
-              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GRqDLrV6oH4iMiDsD0OJ-JvQN0gvCrM5" },
-              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1pWlajznw-vwhVJCNLIEnGEYTA80X6rvZ" },
+              A: { type: "image", value: "eikones/screenshot-2026-10-10-000859.jpg" },
+              B: { type: "image", value: "eikones/screenshot-2026-10-10-000927.jpg" },
+              C: { type: "image", value: "eikones/screenshot-2026-10-10-000959.jpg" },
               D: { type: "image", value: "/eikones/screenshot-2026-10-10-001018.jpg"},
           },
           correct: "D"
@@ -47,7 +47,7 @@ const questionsByLevel = {
 
   "70%": [
       {
-          question: "[70%] Ποιο από τα παρακάτω ζώα δεν υπάρχει στον πίνακα;", imageUrl: "https://lh3.googleusercontent.com/d/1Qki65WHQPQyC7hXbxVEJCLuPIdfU9v7u",
+          question: "[70%] Ποιο από τα παρακάτω ζώα δεν υπάρχει στον πίνακα;", imageUrl: "eikones/screenshot-2026-10-10-111113.jpg",
           options: { A: "Σκύλος", B: "Γάτα", C: "Λιοντάρι", D: "Ασβός" },
           correct: "C",
           explanation: "Στον πίνακα δεν υπάρχει το Λιοντάρι",
@@ -56,12 +56,12 @@ const questionsByLevel = {
   ],
   "60%": [
       {
-          question: "[60%] Ποιο γλειφιτζούρι συμπληρώνει την εικόνα;", imageUrl: "https://lh3.googleusercontent.com/d/1z_D3iIgVbo8_7o3FV-vBDanV5mzQXRZl",
+          question: "[60%] Ποιο γλειφιτζούρι συμπληρώνει την εικόνα;", imageUrl: "eikones/screenshot-2026-10-10-111624.jpg",
           options: {
-              A: { type: "image", value: "https://lh3.googleusercontent.com/d/11OZJrYq7LIH_oBY6DSM21kNt43B-04cL" },
-              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1GUI5wQdLCdiYZU-53nGzJBPD72j5HWOa" },
-              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1Ya-OvBd0ZFdboqZXs60baLfn7NxGCASF" },
-              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1ixDy8xLir9lup9SrdhMC7VB-FqCcm5k3" }
+              A: { type: "image", value: "eikones/screenshot-2026-10-10-111740.jpg" },
+              B: { type: "image", value: "eikones/screenshot-2026-10-10-111702.jpg" },
+              C: { type: "image", value: "eikones/screenshot-2026-10-10-111800.jpg" },
+              D: { type: "image", value: "eikones/screenshot-2026-10-10-111819.jpg" }
           },
           correct: "A",
           explanation: "Κάθε γλειφιτζούρι στην επάνω σειρά έχει από κάτω το καθρέπτισμα του",
@@ -72,10 +72,10 @@ const questionsByLevel = {
       {
           question: "[50%] Ποιος χρωματικός κύκλος απεικονίζει τα χρώματα στη φουσκωτή πυραμίδα;", imageUrl: "https://lh3.googleusercontent.com/d/14D_ZSKJVEgYztZE4yI1ZZCYHJSy6qMIH",
           options: {
-              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1d9QMT8IBaLWLZYWGgUX8oS1M1urkqV29" },
-              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1AHrBZsIVdeKQAfNQkWITPGTZz7YGuo_O" },
-              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1J3CPQwzI-Fe7dz_CJVfVRgdAbLrzbneY" },
-              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1tXm8YWoQVdnwWMGCaTJsFLq4mO1YvKfd" }
+              A: { type: "image", value: "eikones/screenshot-2026-10-10-112539.jpg" },
+              B: { type: "image", value: "eikones/screenshot-2026-10-10-112600.jpg" },
+              C: { type: "image", value: "eikones/screenshot-2026-10-10-112619.jpg" },
+              D: { type: "image", value: "eikones/screenshot-2026-10-10-112635.jpg" }
           },
           correct: "C",
           explanationImageUrl: "https://lh3.googleusercontent.com/d/1q0wYIkWknt56MxARzMePpWaOtDJ9EF8O" // Προαιρετικό
@@ -88,10 +88,10 @@ const questionsByLevel = {
       {
           question: "[30%] Ποια από τις εικόνες ταιριάζει να συνεχίσει την παραπάνω ακολουθία; ", imageUrl: "https://lh3.googleusercontent.com/d/181H0HPnOHwX-MpWhZCPBaQaocXN7ItG-",
           options: {
-              A: { type: "image", value: "https://lh3.googleusercontent.com/d/1l6HBwJ5XdrsdP3HWPxQcovXGN5H1r42S" },
-              B: { type: "image", value: "https://lh3.googleusercontent.com/d/1zlpTCHF49dcF3jCt7-JOfUfAoSG3mFBA" },
-              C: { type: "image", value: "https://lh3.googleusercontent.com/d/1sw7uFR3DtpMnNJ8UE_JTVYTLNebZm7_o" },
-              D: { type: "image", value: "https://lh3.googleusercontent.com/d/1sDzJCshMGvdFoAt2Z64YozqkhddSERJ8" }
+              A: { type: "image", value: "eikones/screenshot-2026-10-10-114441.jpg" },
+              B: { type: "image", value: "eikones/screenshot-2026-10-10-114458.jpg" },
+              C: { type: "image", value: "eikones/screenshot-2026-10-10-114512.jpg" },
+              D: { type: "image", value: "eikones/screenshot-2026-10-10-114531.jpg" }
           },
           correct: "A",
           explanation: "Η λέξη που αναγράφεται σε κάθε κουτί καθορίζει το χρώμα που είναι βαμμένο το επόμενο κουτί. Το χρώμα με το οποίο είναι γραμμένη η λέξη σε κάθε κουτί καθορίζει τη λέξη που αναγράφεται σε κάθε επόμενο κουτί."
@@ -110,7 +110,7 @@ const questionsByLevel = {
       { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86", 
           options: { A: "6", B: "3", C: "9", D: "5" },
           correct: "D",
-          explanationImageUrl: "https://lh3.googleusercontent.com/d/1iTpVog097Mwvfheer_pVcOPYd30xLdZ5"
+          explanationImageUrl: "eikones/screenshot-2026-10-10-132953.jpg"
       }
   ],
   "5%": [

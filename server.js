@@ -29,6 +29,18 @@ const questionsByLevel = {
       D: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10"} 
           },
           correct: "D"
+  },
+
+  {
+    question: "[90%] Τέσσερις άνθρωποι βρίσκονται μέσα στον λαβύρυνθο και προσπαθούν να φτάσουν στο κέντρο. Ποιος πηγαίνει λάθος;",
+    imageUrl: "eikones/maze.jpg",
+    options: {
+        A: A,
+        B: B,
+        C: C,
+        D: D,
+    },
+    correct: "B"
   }
 
   ],

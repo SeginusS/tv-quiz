@@ -41,7 +41,7 @@ const questionsByLevel = {
         D: D,
     },
     correct: "B"
-  },
+  }
 
   ],
 

@@ -38,13 +38,10 @@ const questionsByLevel = {
         A: "A",
         B: "B",
         C: "C",
-        D: "D",
-    },
+        D: "D", },
     correct: "B"
-  }
+   }
     
-      
-
   ],
 
   "80%": [

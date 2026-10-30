@@ -67,16 +67,16 @@ const questionsByLevel = {
           correct: "D"
       },
 
-    {
-    question: "[80%] Ο Γιώργος πάντα ζωγραφίζει έναν κύκλο. Ο Γιώργος ποτε δεν ζωγραφίζει τετράγωνα. Ο Γιώργος πάντα ζωγραφίζει τέσσερα τρίγωνα. Ποια από τις παρακάτω εικόνες είναι πίνακας του Γιώργου;",
-    options: {
-      A: {type: "image", value: "eikones/giorgos.jpg"},
-      B: {type: "image", value: "eikones/giorgos1.jpg" },
-      C: { type: "image", value: "eikones/giorgos2.jpg" },
-      D: { type: "image", value: "/eikones/giorgos0.jpg"},
+      {
+          question: "[80%] Ο Γιώργος πάντα ζωγραφίζει έναν κύκλο. Ο Γιώργος ποτε δεν ζωγραφίζει τετράγωνα. Ο Γιώργος πάντα ζωγραφίζει τέσσερα τρίγωνα. Ποια από τις παρακάτω εικόνες είναι πίνακας του Γιώργου;",
+          options: {
+            A: {type: "image", value: "eikones/giorgos.jpg"},
+            B: {type: "image", value: "eikones/giorgos1.jpg" },
+            C: { type: "image", value: "eikones/giorgos2.jpg" },
+            D: { type: "image", value: "/eikones/giorgos0.jpg"},
              },
           correct: "D"
-  },
+     },
 
     {
       question: "[80%] Ποιο ζώο κρύβεται στην εικόνα;", imageUrl: "eikones/gatak.jpg",
@@ -87,9 +87,7 @@ const questionsByLevel = {
       D: {"ΜΥΓΑ"},
              },
       correct: "B",
-      explanationImageUrl: "eikones/gatakeks"
-      
-            
+      explanationImageUrl: "eikones/gatakeks"         
     }
 
   ],

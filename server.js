@@ -128,9 +128,12 @@ const questionsByLevel = {
       options: { A: "ΑΘΗΝΑΣ", B "ΠΑΣΟ", C: "ΑΡΧΕΛΑΟΥ", D: "ΕΠΑΘΛΟΥ" },
       correct: "C",
       explanationImageUrl: "eikones/odigieseks.jpg" // Προαιρετικό
+    }
   ],
   "40%": [
-    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" },
+    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", 
+      options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" },
+    
     {
       question: "[40%] Οι παρακάτω τέσσερις συνάδελφοι ετοιμάζονται για μεσημεριανό διάλειμμα στη δουλειά. Τρείς από αυτούς έχουν φέρει φαγητό και σνακ από το σπίτι, ένας ή μια θα μείνει νηστικός. Ποιός/ποιά;",
       options: {
@@ -141,6 +144,7 @@ const questionsByLevel = {
       },
       correct: "B",
       explanationImageUrl: "eikones/nikolaoueks.jpg" // Προαιρετικό
+    }
   ],
   "30%": [
       {

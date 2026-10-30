@@ -81,10 +81,7 @@ const questionsByLevel = {
     {
       question: "[80%] Ποιο ζώο κρύβεται στην εικόνα;", imageUrl: "eikones/gatak.jpg",
     options: {
-      A: {"ΣΚΥΛΟΣ"},
-      B: {"ΓΑΤΑ"},
-      C: {"ΑΛΟΓΟ"},
-      D: {"ΜΥΓΑ"},
+      A: "ΣΚΥΛΟΣ", B: "ΓΑΤΑ", C: "ΑΛΟΓΟ", D: "ΜΥΓΑ",
              },
       correct: "B",
       explanationImageUrl: "eikones/gatakeks"         

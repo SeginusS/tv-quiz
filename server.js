@@ -56,7 +56,7 @@ const questionsByLevel = {
       },
 
     {
-    question: "[90%] Ο Γιώργος πάντα ζωγραφίζει έναν κύκλο. Ο Γιώργος ποτε δεν ζωγραφίζει τετράγωνα. Ο Γιώργος πάντα ζωγραφίζει τέσσερα τρίγωνα. Ποια από τις παρακάτω εικόνες είναι πίνακας του Γιώργου;",
+    question: "[80%] Ο Γιώργος πάντα ζωγραφίζει έναν κύκλο. Ο Γιώργος ποτε δεν ζωγραφίζει τετράγωνα. Ο Γιώργος πάντα ζωγραφίζει τέσσερα τρίγωνα. Ποια από τις παρακάτω εικόνες είναι πίνακας του Γιώργου;",
     options: {
       A: {type: "image", value: "eikones/giorgos.jpg"},
       B: {type: "image", value: "eikones/giorgos1" },
@@ -79,7 +79,7 @@ const questionsByLevel = {
 
       {
         question: "[70%] Πόσα τετράγωνα υπάρχουν σε αυτό το μοτίβο",
-        imageUrl: "eikones/",
+        imageUrl: "eikones/tetragona.jpg",
         options: { A: "0", B: "2", C: "4", D: "6" },
         correct: "C"
       }
@@ -98,7 +98,17 @@ const questionsByLevel = {
           correct: "A",
           explanation: "Κάθε γλειφιτζούρι στην επάνω σειρά έχει από κάτω το καθρέπτισμα του",
           explanationImageUrl: "https://lh3.googleusercontent.com/d/1sDvbmPeC1C57F52FOHdqbggdHeEI5vV8" // Προαιρετικό
-      }
+      },
+
+    {
+      question: "[60%] Αν οι τρύπες στα γράμματα ήταν γκολ που έβαλε η κάθε ομάδα, ποια θα κέρδιζε;", imageUrl: "eikones/panath.jpg",
+      options: { A: "Παναθηναϊκός", B: "Ολυμπιακός" },
+      correct: "A",
+      explanationImageUrl: "eikones/panathaeks.jpg"
+    }
+
+
+    
   ],
   "50%": [
       {
@@ -131,7 +141,7 @@ const questionsByLevel = {
 
     {
       question: "[30%] Ποια λέξη αντικαθιστά το ερωτηματικό;",
-      imageUrl:"",
+      imageUrl:"eikones/leksik.jpg",
       options: { A: "ΚΟΚΚΙΝΟ", B: "ΜΠΛΕ", C: "ΜΑΥΡΟ", D: "ΠΡΑΣΙΝΟ"},
       correct: "D",
       explanation: "Η λέξη που αναγράφεται σε κάθε κουτί καθορίζει το χρώμα που είναι βαμμένο το επόμενο κουτί."
@@ -149,7 +159,7 @@ const questionsByLevel = {
 
     {
       question: "[20%] Ποιος αριθμός αντικαθιστά το ερωτηματικό στην παρακάτω εικόνα;",
-      imageUrl:"",
+      imageUrl:"eikones/erotimatiko.jpg",
       options: { A: "9", B: "11", C: "12", D: "13"},
       correct: "C",
       explanation: "Ο αριθμός στα αριστερά αντιπροσωπεύει το συνολικό πλήθος των γραμμών που περιέχονται στον αριθμό στα αριστερά. Καθώς προχωράμε προς τα κάτω στη λίστα, έχουν προστεθεί περισσότερες γραμμές στα ψηφία «1» και «7»."
@@ -157,7 +167,7 @@ const questionsByLevel = {
 
     {
       question: "[20] Η φιγούρα ξεκινάει από το τετράγωνο με τον αριθμό 1, κινέιται κάθε φορά προς την κατεύθυνση που δείχνει, σε ποιον αριθμό τετραγώνου καταλήγει;",
-      imageUrl: "",
+      imageUrl: "eikones/figoura.jpg",
       options: { A: "19", B: "20", C: "18", D: "22"},
       correct: "A",
     },

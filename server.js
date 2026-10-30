@@ -137,7 +137,10 @@ const questionsByLevel = {
         A: { type: "image", value: "eikones/karakasis.jpg"},
         B: { type: "image", value: "eikones/nikolaou.jpg"},
         C: { type: "image", value: "eikones/ekatostari.jpg"},
-        D: { type: "image", value: "eikones/mpelies.jpg"},
+        D: { type: "image", value: "eikones/mpelies.jpg"}
+      },
+      correct: "B",
+      explanationImageUrl: "eikones/nikolaoueks.jpg" // Προαιρετικό
   ],
   "30%": [
       {

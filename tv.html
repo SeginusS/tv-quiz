@@ -723,6 +723,13 @@
         music.volume = MUSIC_VOLUME;
         music.loop = false;
 
+        // Καμπανάκι "ντιν ντον" (3 δευτερόλεπτα) όταν μπαίνει νέος παίκτης στο lobby
+        const JOIN_URL = '/music/join.mp3';
+        const JOIN_VOLUME = 0.8;
+        const joinSound = new Audio(JOIN_URL);
+        joinSound.preload = 'auto';
+        joinSound.volume = JOIN_VOLUME;
+
         let soundUnlocked = false;
         let questionRunning = false;   // τρέχει ερώτηση αυτή τη στιγμή;
         let questionPaused = false;
@@ -748,6 +755,13 @@
                 // Αν η ερώτηση έτρεχε ήδη όταν πατήθηκε το κουμπί, ξεκινά τώρα
                 if (questionRunning && !questionPaused) playMusic();
             };
+
+            // Ξεκλειδώνει και το καμπανάκι (σιωπηλά)
+            joinSound.muted = true;
+            const jp = joinSound.play();
+            const jdone = () => { joinSound.pause(); joinSound.currentTime = 0; joinSound.muted = false; };
+            if (jp && jp.then) jp.then(jdone).catch(() => { joinSound.muted = false; });
+            else jdone();
             if (p && p.then) p.then(done).catch(() => { music.muted = false; });
             else done();
         }
@@ -792,6 +806,30 @@
         socket.on('game-resumed', () => {
             questionPaused = false;
             if (questionRunning) playMusic();
+        });
+
+        // ---- Καμπανάκι για νέο παίκτη ----
+        let knownPlayers = new Set();
+        let quietUntil = 0;
+
+        // Σε νέο δωμάτιο ή επανασύνδεση της τηλεόρασης, η λίστα των ήδη συνδεδεμένων
+        // παικτών φτάνει αμέσως μετά: τους καταγράφουμε χωρίς ήχο
+        socket.on('room-created', () => {
+            knownPlayers = new Set();
+            quietUntil = Date.now() + 1500;
+        });
+
+        socket.on('update-players', (data) => {
+            const names = data.playersList.map(p => p.name);
+            const newOnes = names.filter(n => !knownPlayers.has(n));
+            names.forEach(n => knownPlayers.add(n));
+
+            const lobbyVisible = document.getElementById('lobbySection').style.display !== 'none';
+            if (newOnes.length && lobbyVisible && Date.now() > quietUntil && soundUnlocked) {
+                joinSound.currentTime = 0;
+                const p = joinSound.play();
+                if (p && p.catch) p.catch(() => {});
+            }
         });
 
         // Η ερώτηση τελείωσε (αποκάλυψη, εξήγηση, τέλος ή τερματισμός): σταματά η μουσική

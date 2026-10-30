@@ -78,6 +78,20 @@ const questionsByLevel = {
           correct: "D"
   },
 
+    {
+      question: "[80%] Ποιο ζώο κρύβεται στην εικόνα;", imageUrl: "eikones/gatak.jpg",
+    options: {
+      A: {"ΣΚΥΛΟΣ"},
+      B: {"ΓΑΤΑ"},
+      C: {"ΑΛΟΓΟ"},
+      D: {"ΜΥΓΑ"},
+             },
+      correct: "B",
+      explanationImageUrl: "eikones/gatakeks"
+      
+            
+    }
+
   ],
 
   "70%": [
@@ -288,7 +302,16 @@ const questionsByLevel = {
         options: { A: "6", B: "7", C: "8", D: "9"},
         correct: "D",
         explanationImageUrl: "eikones/simaieseks.jpg"
+    },
+
+    {
+      question:"[5%]  Πόσα τετράγωνα υπάρχουν στην εικόνα;", imageUrl: "eikones/squares.jpg",
+        options: { A: "34", B: "46", C: "52", D: "58"},
+        correct: "B",
+        explanation: "Υπάρχουν 16 τετράγωνα μήκους 0,5 - 16 μήκους 1 - 9 μήκους 2 - 4 μήκους 3 - 1 μήκους 4"
     }
+
+    
     
   ],
   "1%": [

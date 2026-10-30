@@ -40,7 +40,19 @@ const questionsByLevel = {
         C: "C",
         D: "D", },
     correct: "B"
-   }
+   },
+
+  {
+    question: "[90%] Σε ποια εικόνα κρύβεται ο σκίουρος;",
+    imageUrl: "",
+    options: {
+        A: { type: "image", value: "eikones/kamila.jpg" },
+        B: { type: "image", value: "eikones/skiouros.jpg" },
+        C: { type: "image", value: "eikones/gata.jpg" },
+        D: { type: "image", value: "/eikones/papia.jpg"},
+          },
+    correct: "B"
+  }
 
   ],
 
@@ -82,7 +94,18 @@ const questionsByLevel = {
         imageUrl: "eikones/tetragona.jpg",
         options: { A: "0", B: "2", C: "4", D: "6" },
         correct: "C"
-      }
+      },
+
+      {
+        question: "[70%] Η Μένια θέλει να ανοίξει το κινητό του άντρα της, αλλά είναι κλειδωμένο. Παρατηρεί την συγκεκριμένη φωτογραφία στην κλειδωμένη οθόνη. Ποιός είναι ο κωδικός;",
+        imageUrl: "eikones/kodikos.jpg",
+        options: { A: "0232", B: "5052", C: "0330", D: "5023" },
+        correct: "A",
+        explanation: "0232",
+        explanationImageUrl: "eikones/kodikoseks.jpg"
+        }  
+
+    
 
 
   ],
@@ -105,6 +128,14 @@ const questionsByLevel = {
       options: { A: "Παναθηναϊκός", B: "Ολυμπιακός", C: " ", D: " "  },
       correct: "A",
       explanationImageUrl: "eikones/panathaeks.jpg"
+    },
+
+    {
+      question: "[60%] Με ποιο από τα τρία σετ ακουστικών δεν μπορείς να ακούσεις μουσική;", imageUrl: "eikones/akoustika.jpg",
+      options: { A: "ΑΣΠΡΟ", B: "ΜΠΛΕ", C: "ΚΙΤΡΙΝΟ", D: "ΚΑΝΕΝΑ"  },
+      correct: "C",
+      explanation: "Το καλώδιο των κίτρινων ακουστικών είναι κομμένο",
+      explanationImageUrl: "eikones/akoustikaeks.jpg"
     }
 
 
@@ -128,7 +159,20 @@ const questionsByLevel = {
       options: { A: "ΑΘΗΝΑΣ", B: "ΠΑΣΟ", C: "ΑΡΧΕΛΑΟΥ", D: "ΕΠΑΘΛΟΥ" },
       correct: "C",
       explanationImageUrl: "eikones/odigieseks.jpg" // Προαιρετικό
+    },
+
+    {
+      question: "[50%] Είναι...ηλίου φαεινότερο ποια φωτογραφία δεν ταιριάζει με τις υπόλοιπες. Ποια είναι; ", imageUrl: "",
+      options: {
+          Α: { type: "image", value: "eikones/elia.jpg" },
+          B: { type: "image", value: "eikones/pasok.jpg" },
+          C: { type: "image", value: "eikones/iliako.jpg" },
+          D: { type: "image", value: "eikones/roloiiliako.jpg" }
+      },
+      correct: "A",
+      explanationImageUrl: "eikones/ilioeks.jpg.jpg" // Προαιρετικό
     }
+    
   ],
   "40%": [
     {
@@ -146,6 +190,18 @@ const questionsByLevel = {
       },
       correct: "B",
       explanationImageUrl: "eikones/nikolaoueks.jpg" // Προαιρετικό
+    },
+
+    {
+      question: "[40%] Ποια φιγούρα ταιριάζει να μπει στην θέση του ερωτηματικού για να συνεχιστεί σωστά η πορεία;", imageUrl: "eikones/figoures.jpg",
+      options: {
+        A: { type: "image", value: "eikones/A.jpg"},
+        B: { type: "image", value: "eikones/B.jpg"},
+        C: { type: "image", value: "eikones/C.jpg"},
+        D: { type: "image", value: "eikones/D.jpg"}
+      },
+      correct: "B",
+      explanationImageUrl: "eikones/figoureseks.jpg" // Προαιρετικό
     }
   ],
   "30%": [
@@ -167,6 +223,14 @@ const questionsByLevel = {
       options: { A: "ΚΟΚΚΙΝΟ", B: "ΜΠΛΕ", C: "ΜΑΥΡΟ", D: "ΠΡΑΣΙΝΟ"},
       correct: "D",
       explanation: "Η λέξη που αναγράφεται σε κάθε κουτί καθορίζει το χρώμα που είναι βαμμένο το επόμενο κουτί."
+    },
+
+    {
+      question: "[30%] Ποια από τις λέξεις δεν ακολουθεί τον κανόνα της σειράς;",
+      imageUrl:"eikones/lekseis.jpg",
+      options: { A: "ΑΒΓΟ", B: "ΓΔΕΡΝΩ", C: "ΕΖΗΣΑ", D: "ΙΚΕΣΙΑ"},
+      correct: "D",
+      explanationImageUrl: "eikones/lekseiseks"
     }
 
   ],
@@ -207,10 +271,25 @@ const questionsByLevel = {
         options: { A: "ΚΑΝΕΝΑ", B: "ΟΚΤΩ", C: "ΕΠΤΑ", D: "ΤΕΣΣΕΡΑ"},
         correct: "A",
         explanation: "Κανένα από τα σχήματα δεν είναι τρίγωνο"
+      },
+
+     {
+        question:"[10%] Ο Μανώλης κρύβει τα μετρητά μέσα στο σπίτι. Ο κωδικός που έφτιαξε βασίζεται στους αγαπημένους του διασήμους και του θυμίζει που έχει τα μετρητά. Σε ποιο σημείο;", imageUrl: "eikones/kodikosman.jpg",
+        options: { A: "ΣΠΙΤΙ", B: "ΚΑΖΑΝΑΚΙ", C: "ΚΑΤΣΑΡΟΛΑ", D: "ΣΤΡΩΜΑ"},
+        correct: "B",
+        explanationImageUrl: "eikones/kodikosmaneks.jpg"
       }
   ],
   "5%": [
-    { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" }
+    { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" },
+
+    {
+      question:"[5%] Ο σταυρός πρωταγωνιστεί σε σημαίες πολλών χωρών σε όλο τον κόσμο. Η Γεωργία, η Σουηδία, η Ελβετία και η Ελλάδα είναι μεταξύ αυτών των χωρών. Πόσοι σταυροί υπάρχουν στην εικόνα;", imageUrl: "eikones/simaies.jpg",
+        options: { A: "6", B: "7", C: "8", D: "9"},
+        correct: "D",
+        explanationImageUrl: "eikones/simaieseks.jpg"
+    }
+    
   ],
   "1%": [
       {
@@ -227,7 +306,15 @@ const questionsByLevel = {
         correct: "B",
         explanation: "21 22. Όλοι οι αριθμοί ξεκινουν από το γράμμα Ε και είναι σε αύξουσα σειρά",
         explanationImageUrl: "eikones/1aritmoieks.jpg" // Προαιρετικό
+      },
+
+      {
+        question: "[1%] Ποιος είναι ο πενταψήφιος κωδικός που έχει σημειώσει κωδικοποιημένα ο Άγγελος ως υπενθύμηση, για να ανοίγει τον υπολογιστή του; ", imageUrl: "eikones/kodikosagg.jpg",
+        options: { A: "33322", B: "74642", C: "41944", D: "41725"},
+        correct: "D",
+        explanationImageUrl: "eikones/kodikosaggeks.jpg" // Προαιρετικό
       }
+    
   ]
 };
 

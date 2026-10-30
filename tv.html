@@ -71,6 +71,25 @@
             letter-spacing: 2px;
         }
 
+        .sound-btn {
+            margin-top: 2vh;
+            padding: 1.2vh 2vw;
+            font-size: 2.4vh;
+            font-weight: bold;
+            color: #fff;
+            background: #b45309;
+            border: 3px solid #f59e0b;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .sound-btn:focus { outline: 4px solid #fff; }
+
+        .sound-btn.on {
+            background: #047857;
+            border-color: #34d399;
+        }
+
         .lobby-players-box {
             background: #1e293b;
             padding: 2vh 2vw;
@@ -403,6 +422,9 @@
                     <i style="color: #64748b;">Αναμονή παικτών...</i>
                 </div>
             </div>
+
+            <!-- Ενεργοποίηση ήχου: οι browsers δεν αφήνουν ήχο αν δεν έχει προηγηθεί πάτημα (π.χ. OK στο τηλεχειριστήριο) -->
+            <button id="soundBtn" type="button" class="sound-btn">🔇 Πάτα OK για να ενεργοποιηθεί ο ήχος</button>
         </div>
 
         <div id="questionSection">
@@ -688,6 +710,93 @@
                 listEl.appendChild(row);
             });
         }
+
+        // ================= Μουσική ερώτησης =================
+        // Βάλε το mp3 (30 δευτερόλεπτα) στον φάκελο "music" με αυτό το όνομα,
+        // ή άλλαξε τη διαδρομή εδώ:
+        const MUSIC_URL = '/music/question.mp3';
+        const MUSIC_VOLUME = 0.6;      // 0 (σίγαση) έως 1 (μέγιστο)
+        const QUESTION_SECONDS = 30;
+
+        const music = new Audio(MUSIC_URL);
+        music.preload = 'auto';
+        music.volume = MUSIC_VOLUME;
+        music.loop = false;
+
+        let soundUnlocked = false;
+        let questionRunning = false;   // τρέχει ερώτηση αυτή τη στιγμή;
+        let questionPaused = false;
+
+        const soundBtn = document.getElementById('soundBtn');
+
+        function setSoundButton(on) {
+            soundBtn.textContent = on ? '🔊 Ο ήχος είναι ενεργός' : '🔇 Πάτα OK για να ενεργοποιηθεί ο ήχος';
+            soundBtn.classList.toggle('on', on);
+        }
+
+        // Ο browser επιτρέπει ήχο μόνο μετά από πάτημα/πλήκτρο. Εδώ "ξεκλειδώνουμε" τον ήχο.
+        function unlockSound() {
+            if (soundUnlocked) return;
+            music.muted = true;
+            const p = music.play();
+            const done = () => {
+                music.pause();
+                music.currentTime = 0;
+                music.muted = false;
+                soundUnlocked = true;
+                setSoundButton(true);
+                // Αν η ερώτηση έτρεχε ήδη όταν πατήθηκε το κουμπί, ξεκινά τώρα
+                if (questionRunning && !questionPaused) playMusic();
+            };
+            if (p && p.then) p.then(done).catch(() => { music.muted = false; });
+            else done();
+        }
+
+        function playMusic() {
+            if (!soundUnlocked) return;
+            const p = music.play();
+            if (p && p.catch) p.catch(() => {});
+        }
+
+        function stopMusic() {
+            questionRunning = false;
+            questionPaused = false;
+            music.pause();
+            music.currentTime = 0;
+        }
+
+        soundBtn.addEventListener('click', unlockSound);
+        // Οποιοδήποτε πάτημα ή πλήκτρο του τηλεχειριστηρίου ξεκλειδώνει τον ήχο
+        document.addEventListener('click', unlockSound);
+        document.addEventListener('keydown', unlockSound);
+
+        socket.on('show-question', () => {
+            questionRunning = true;
+            questionPaused = false;
+            music.currentTime = 0;
+            playMusic();
+        });
+
+        // Κρατά τη μουσική συγχρονισμένη με το χρονόμετρο (π.χ. μετά από επανασύνδεση)
+        socket.on('timer-update', (timeLeft) => {
+            if (!questionRunning || !music.duration) return;
+            const expected = Math.max(0, QUESTION_SECONDS - timeLeft);
+            if (Math.abs(music.currentTime - expected) > 2) music.currentTime = Math.min(expected, music.duration - 0.1);
+        });
+
+        socket.on('game-paused', () => {
+            questionPaused = true;
+            music.pause();
+        });
+
+        socket.on('game-resumed', () => {
+            questionPaused = false;
+            if (questionRunning) playMusic();
+        });
+
+        // Η ερώτηση τελείωσε (αποκάλυψη, εξήγηση, τέλος ή τερματισμός): σταματά η μουσική
+        ['reveal-answer', 'show-explanation', 'game-over', 'game-terminated', 'room-closed']
+            .forEach(ev => socket.on(ev, stopMusic));
     </script>
 </body>
 </html>

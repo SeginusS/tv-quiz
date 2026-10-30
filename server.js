@@ -102,7 +102,7 @@ const questionsByLevel = {
 
     {
       question: "[60%] Αν οι τρύπες στα γράμματα ήταν γκολ που έβαλε η κάθε ομάδα, ποια θα κέρδιζε;", imageUrl: "eikones/panath.jpg",
-      options: { A: "Παναθηναϊκός", B: "Ολυμπιακός" },
+      options: { A: "Παναθηναϊκός", B: "Ολυμπιακός", C: " ", D: " "  },
       correct: "A",
       explanationImageUrl: "eikones/panathaeks.jpg"
     }

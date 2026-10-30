@@ -22,11 +22,11 @@ const questionsByLevel = {
 {
     question: "[90%] Ποια από τις τέσσερις μύτες δεν αναπνέει;" ,
     imageUrl: "",
-    options: { 
+    options: {
       A: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQgAuWFqOfIiLx5jJARCyH_Nv4xFK7FksIdK5xa3QdeUHF_Os9GBAiVR8&s=10"},
-      B: { type: "image", value: "https://thumbs.dreamstime.com/b/none-188018600.jpg"}, 
+      B: { type: "image", value: "https://thumbs.dreamstime.com/b/none-188018600.jpg"},
       C: { type: "image", value: "https://www.tanea.gr/wp-content/uploads/2011/04/pig.jpg"},
-      D: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10"} 
+      D: { type: "image", value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjYSCLoB9nwvgcQOXr6YjHQXCpatHlm5PdV-MZceek6DnpU1XOGMqMomAg&s=10"}
           },
           correct: "D"
   },
@@ -41,7 +41,7 @@ const questionsByLevel = {
         D: "D", },
     correct: "B"
    }
-    
+
   ],
 
   "80%": [
@@ -59,13 +59,13 @@ const questionsByLevel = {
     question: "[80%] Ο Γιώργος πάντα ζωγραφίζει έναν κύκλο. Ο Γιώργος ποτε δεν ζωγραφίζει τετράγωνα. Ο Γιώργος πάντα ζωγραφίζει τέσσερα τρίγωνα. Ποια από τις παρακάτω εικόνες είναι πίνακας του Γιώργου;",
     options: {
       A: {type: "image", value: "eikones/giorgos.jpg"},
-      B: {type: "image", value: "eikones/giorgos1" },
-      C: { type: "image", value: "eikones/giorgos2" },
-      D: { type: "image", value: "/eikones/giorgos0"},
+      B: {type: "image", value: "eikones/giorgos1.jpg" },
+      C: { type: "image", value: "eikones/giorgos2.jpg" },
+      D: { type: "image", value: "/eikones/giorgos0.jpg"},
              },
           correct: "D"
   },
-    
+
   ],
 
   "70%": [
@@ -83,8 +83,8 @@ const questionsByLevel = {
         options: { A: "0", B: "2", C: "4", D: "6" },
         correct: "C"
       }
-        
-  
+
+
   ],
   "60%": [
       {
@@ -108,7 +108,7 @@ const questionsByLevel = {
     }
 
 
-    
+
   ],
   "50%": [
       {
@@ -125,17 +125,17 @@ const questionsByLevel = {
 
     {
       question: "[50%] Βρίσκεσαι στον κόκκινο κύκλο και κινείσαι με κατεύθυνση το βέλος. Σε ποιό βέλος θα καταλήξεις, αν ακολουθήσεις τις οδηγίες; Στον 1ο δρόμο στρίψε δεξιά - Στον 2ο δρόμο αριστερά - Στον 1ο δρόμο αριστερά - και στον 2ο δρόμο δεξιά. ", imageUrl: "eikones/odigies.jpg",
-      options: { A: "ΑΘΗΝΑΣ", B "ΠΑΣΟ", C: "ΑΡΧΕΛΑΟΥ", D: "ΕΠΑΘΛΟΥ" },
+      options: { A: "ΑΘΗΝΑΣ", B: "ΠΑΣΟ", C: "ΑΡΧΕΛΑΟΥ", D: "ΕΠΑΘΛΟΥ" },
       correct: "C",
       explanationImageUrl: "eikones/odigieseks.jpg" // Προαιρετικό
     }
   ],
   "40%": [
-    { 
-      question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", 
-      options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C", 
+    {
+      question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "",
+      options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C",
     },
-    
+
     {
       question: "[40%] Οι παρακάτω τέσσερις συνάδελφοι ετοιμάζονται για μεσημεριανό διάλειμμα στη δουλειά. Τρείς από αυτούς έχουν φέρει φαγητό και σνακ από το σπίτι, ένας ή μια θα μείνει νηστικός. Ποιός/ποιά;",
       options: {
@@ -168,7 +168,7 @@ const questionsByLevel = {
       correct: "D",
       explanation: "Η λέξη που αναγράφεται σε κάθε κουτί καθορίζει το χρώμα που είναι βαμμένο το επόμενο κουτί."
     }
-    
+
   ],
   "20%": [
       {
@@ -193,10 +193,10 @@ const questionsByLevel = {
       options: { A: "19", B: "20", C: "18", D: "22"},
       correct: "A",
     },
-    
+
   ],
   "10%": [
-      { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86", 
+      { question: "[10%] Αν ακολουθήσεις με την σειρά τα γράμματα της λέξης ΜΠΑΜΠΟΥΙΝΟΣ ποιος αριθμός σχηματίζεται;", imageUrl: "https://lh3.googleusercontent.com/d/1htpDl83icPpqgjpc3U849PkkG3NbQn86",
           options: { A: "6", B: "3", C: "9", D: "5" },
           correct: "D",
           explanationImageUrl: "eikones/screenshot-2026-10-10-132953.jpg"
@@ -207,7 +207,7 @@ const questionsByLevel = {
         options: { A: "ΚΑΝΕΝΑ", B: "ΟΚΤΩ", C: "ΕΠΤΑ", D: "ΤΕΣΣΕΡΑ"},
         correct: "A",
         explanation: "Κανένα από τα σχήματα δεν είναι τρίγωνο"
-      
+      }
   ],
   "5%": [
     { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" }
@@ -227,7 +227,7 @@ const questionsByLevel = {
         correct: "B",
         explanation: "21 22. Όλοι οι αριθμοί ξεκινουν από το γράμμα Ε και είναι σε αύξουσα σειρά",
         explanationImageUrl: "eikones/1aritmoieks.jpg" // Προαιρετικό
-        
+      }
   ]
 };
 

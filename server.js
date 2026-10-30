@@ -121,10 +121,23 @@ const questionsByLevel = {
           },
           correct: "C",
           explanationImageUrl: "https://lh3.googleusercontent.com/d/1q0wYIkWknt56MxARzMePpWaOtDJ9EF8O" // Προαιρετικό
-      }
+      },
+
+    {
+      question: "[50%] Βρίσκεσαι στον κόκκινο κύκλο και κινείσαι με κατεύθυνση το βέλος. Σε ποιό βέλος θα καταλήξεις, αν ακολουθήσεις τις οδηγίες; Στον 1ο δρόμο στρίψε δεξιά - Στον 2ο δρόμο αριστερά - Στον 1ο δρόμο αριστερά - και στον 2ο δρόμο δεξιά. ", imageUrl: "eikones/odigies.jpg",
+      options: { A: "ΑΘΗΝΑΣ", B "ΠΑΣΟ", C: "ΑΡΧΕΛΑΟΥ", D: "ΕΠΑΘΛΟΥ" },
+      correct: "C",
+      explanationImageUrl: "eikones/odigieseks.jpg" // Προαιρετικό
   ],
   "40%": [
-    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" }
+    { question: "[40%] Ποια λέξη ΔΕΝ ταιριάζει με τις υπόλοιπες;", imageUrl: "", options: { A: "Μήλο", B: "Μπανάνα", C: "Καρότο", D: "Πορτοκάλι" }, correct: "C" },
+    {
+      question: "[40%] Οι παρακάτω τέσσερις συνάδελφοι ετοιμάζονται για μεσημεριανό διάλειμμα στη δουλειά. Τρείς από αυτούς έχουν φέρει φαγητό και σνακ από το σπίτι, ένας ή μια θα μείνει νηστικός. Ποιός/ποιά;",
+      options: {
+        A: { type: "image", value: "eikones/karakasis.jpg"},
+        B: { type: "image", value: "eikones/nikolaou.jpg"},
+        C: { type: "image", value: "eikones/ekatostari.jpg"},
+        D: { type: "image", value: "eikones/mpelies.jpg"},
   ],
   "30%": [
       {
@@ -178,7 +191,14 @@ const questionsByLevel = {
           options: { A: "6", B: "3", C: "9", D: "5" },
           correct: "D",
           explanationImageUrl: "eikones/screenshot-2026-10-10-132953.jpg"
-      }
+      },
+
+      {
+        question:"[10%] Πόσα τρίγωνα υπάρχουν στην εικόνα", imageUrl: "eikones/tourta.jpg",
+        options: { A: "ΚΑΝΕΝΑ", B: "ΟΚΤΩ", C: "ΕΠΤΑ", D: "ΤΕΣΣΕΡΑ"},
+        correct: "A",
+        explanation: "Κανένα από τα σχήματα δεν είναι τρίγωνο"
+      
   ],
   "5%": [
     { question: "[5%] Ποιο είναι το επόμενο γράμμα στη σειρά: Δ, Τ, Τ, Π, Ε, Ε, ...;", imageUrl: "", options: { A: "Σ", B: "Κ", C: "Ο", D: "Ε" }, correct: "C" }
@@ -190,7 +210,15 @@ const questionsByLevel = {
           correct: "D",
           explanation: "5-2-22. Μόνο με αυτή την λογική προκύπτει ημερομηνία του αιώνα που διανύουμε, δηλαδή 5 δυάρια και 20 εικοσιδυάρια, δηλαδή 5 2 και 20 22 άρα 5-2-22",
           explanationImageUrl: "https://lh3.googleusercontent.com/d/14NVCq_dzFj5WPGeJL6lL-0ao727DaJ20" // Προαιρετικό
-      }
+      },
+
+      {
+        question: "[1%] Οι έξι αριθμοί είναι στην γραμμή εκκίνησης. Ποιοι είναι οι δύο επόμενοι αριθμοί που αντικαθιστούν τα ερωτηματικά; ", imageUrl: "eikones/1arithmoi.jpg",
+        options: { A: "31 42", B: "21 22", C: "26 28", D: "37 32"},
+        correct: "B",
+        explanation: "21 22. Όλοι οι αριθμοί ξεκινουν από το γράμμα Ε και είναι σε αύξουσα σειρά",
+        explanationImageUrl: "eikones/1aritmoieks.jpg" // Προαιρετικό
+        
   ]
 };
 

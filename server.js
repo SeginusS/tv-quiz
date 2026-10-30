@@ -84,7 +84,7 @@ const questionsByLevel = {
       A: "ΣΚΥΛΟΣ", B: "ΓΑΤΑ", C: "ΑΛΟΓΟ", D: "ΜΥΓΑ",
              },
       correct: "B",
-      explanationImageUrl: "eikones/gatakeks"         
+      explanationImageUrl: "eikones/gatakeks.jpg"         
     }
 
   ],

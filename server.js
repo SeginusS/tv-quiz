@@ -179,7 +179,7 @@ const questionsByLevel = {
           D: { type: "image", value: "eikones/roloiiliako.jpg" }
       },
       correct: "A",
-      explanationImageUrl: "eikones/ilioeks.jpg.jpg" // Προαιρετικό
+      explanationImageUrl: "eikones/ilioeks.jpg" // Προαιρετικό
     }
     
   ],

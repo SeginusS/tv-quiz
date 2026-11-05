@@ -174,10 +174,10 @@ const questionsByLevel = {
     {
       question: "[50%] Είναι...ηλίου φαεινότερο ποια φωτογραφία δεν ταιριάζει με τις υπόλοιπες. Ποια είναι; ", imageUrl: "",
       options: {
-          Α: { type: "image", value: "eikones/elia.jpg" },
-          B: { type: "image", value: "eikones/pasok.jpg" },
-          C: { type: "image", value: "eikones/iliako.jpg" },
-          D: { type: "image", value: "eikones/roloiiliako.jpg" }
+          A: { type: "image", value: "eikones/elia.jpg"},
+          B: { type: "image", value: "eikones/pasok.jpg"},
+          C: { type: "image", value: "eikones/iliako.jpg"},
+          D: { type: "image", value: "eikones/roloiiliako.jpg"}
       },
       correct: "A",
       explanationImageUrl: "eikones/ilioeks.jpg" // Προαιρετικό

@@ -433,7 +433,7 @@
                 <h2>⏸️ ΠΑΥΣΗ ⏸️</h2>
             </div>
 
-            <div id="timerText" class="timer-text">30</div>
+            <div id="timerText" class="timer-text">50</div>
             <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
 
             <h2 id="qTitle">Ερώτηση</h2>
@@ -474,6 +474,7 @@
     <script>
         const socket = io();
         let currentRoom = '';
+        let questionDuration = 50;   // δευτερόλεπτα ανά ερώτηση (ο server στέλνει την πραγματική τιμή)
 
         // Μόνιμο αναγνωριστικό αυτής της τηλεόρασης. Όταν η σελίδα ανανεωθεί, ο server
         // καταλαβαίνει ότι είναι η ίδια τηλεόραση, κλείνει το παλιό δωμάτιο
@@ -606,7 +607,7 @@
 
         socket.on('timer-update', (timeLeft) => {
             document.getElementById('timerText').textContent = timeLeft;
-            const percentage = (timeLeft / 30) * 100;
+            const percentage = (timeLeft / questionDuration) * 100;
             document.getElementById('timerBar').style.width = percentage + '%';
         });
 
@@ -712,16 +713,17 @@
         }
 
         // ================= Μουσική ερώτησης =================
-        // Βάλε το mp3 (30 δευτερόλεπτα) στον φάκελο "music" με αυτό το όνομα,
+        // Βάλε το mp3 στον φάκελο "music" με αυτό το όνομα,
         // ή άλλαξε τη διαδρομή εδώ:
         const MUSIC_URL = '/music/question.mp3';
         const MUSIC_VOLUME = 0.6;      // 0 (σίγαση) έως 1 (μέγιστο)
-        const QUESTION_SECONDS = 30;
+        const MUSIC_START_TIMELEFT = 30; // η μουσική ξεκινά όταν απομένουν τόσα δευτερόλεπτα (πριν από αυτό: σιωπή)
+        const MUSIC_LOOP = false;      // true: επαναλαμβάνεται αν το mp3 τελειώσει πριν τελειώσει ο χρόνος
 
         const music = new Audio(MUSIC_URL);
         music.preload = 'auto';
         music.volume = MUSIC_VOLUME;
-        music.loop = false;
+        music.loop = MUSIC_LOOP;
 
         // Καμπανάκι "ντιν ντον" (3 δευτερόλεπτα) όταν μπαίνει νέος παίκτης στο lobby
         const JOIN_URL = '/music/join.mp3';
@@ -733,6 +735,10 @@
         let soundUnlocked = false;
         let questionRunning = false;   // τρέχει ερώτηση αυτή τη στιγμή;
         let questionPaused = false;
+        let lastTimeLeft = Infinity;   // τελευταίος χρόνος που έστειλε ο server
+
+        // Είμαστε στο διάστημα που πρέπει να παίζει η μουσική; (τα πρώτα δευτερόλεπτα είναι σιωπηλά)
+        function inMusicWindow() { return lastTimeLeft <= MUSIC_START_TIMELEFT; }
 
         const soundBtn = document.getElementById('soundBtn');
 
@@ -752,8 +758,8 @@
                 music.muted = false;
                 soundUnlocked = true;
                 setSoundButton(true);
-                // Αν η ερώτηση έτρεχε ήδη όταν πατήθηκε το κουμπί, ξεκινά τώρα
-                if (questionRunning && !questionPaused) playMusic();
+                // Αν η μουσική έπρεπε ήδη να παίζει όταν πατήθηκε το κουμπί, ξεκινά τώρα
+                if (questionRunning && !questionPaused && inMusicWindow()) playMusic();
             };
 
             // Ξεκλειδώνει και το καμπανάκι (σιωπηλά)
@@ -775,6 +781,7 @@
         function stopMusic() {
             questionRunning = false;
             questionPaused = false;
+            lastTimeLeft = Infinity;
             music.pause();
             music.currentTime = 0;
         }
@@ -784,18 +791,30 @@
         document.addEventListener('click', unlockSound);
         document.addEventListener('keydown', unlockSound);
 
-        socket.on('show-question', () => {
+        socket.on('show-question', (data) => {
+            if (data && data.duration) questionDuration = data.duration;
             questionRunning = true;
             questionPaused = false;
+            lastTimeLeft = Infinity;       // νέα ερώτηση: ξεκινά με σιωπή
+            music.pause();
             music.currentTime = 0;
-            playMusic();
         });
 
-        // Κρατά τη μουσική συγχρονισμένη με το χρονόμετρο (π.χ. μετά από επανασύνδεση)
+        // Ξεκινά τη μουσική όταν φτάσει η ώρα και την κρατά συγχρονισμένη με το χρονόμετρο
+        // (π.χ. μετά από επανασύνδεση της τηλεόρασης)
         socket.on('timer-update', (timeLeft) => {
-            if (!questionRunning || !music.duration) return;
-            const expected = Math.max(0, QUESTION_SECONDS - timeLeft);
-            if (Math.abs(music.currentTime - expected) > 2) music.currentTime = Math.min(expected, music.duration - 0.1);
+            if (!questionRunning) return;
+            lastTimeLeft = timeLeft;
+            if (!inMusicWindow() || !music.duration) return;
+
+            const dur = music.duration;
+            const elapsed = Math.max(0, MUSIC_START_TIMELEFT - timeLeft);   // δευτερόλεπτα μουσικής που πέρασαν
+            const expected = MUSIC_LOOP ? elapsed % dur : Math.min(elapsed, dur - 0.1);
+            let diff = Math.abs(music.currentTime - expected);
+            if (MUSIC_LOOP) diff = Math.min(diff, dur - diff);   // κοντά στο όριο της επανάληψης δεν θεωρείται απόκλιση
+            if (diff > 2) music.currentTime = expected;
+
+            if (music.paused && !questionPaused) playMusic();
         });
 
         socket.on('game-paused', () => {
@@ -805,7 +824,7 @@
 
         socket.on('game-resumed', () => {
             questionPaused = false;
-            if (questionRunning) playMusic();
+            if (questionRunning && inMusicWindow()) playMusic();
         });
 
         // ---- Καμπανάκι για νέο παίκτη ----

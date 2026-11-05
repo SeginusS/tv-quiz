@@ -9,6 +9,7 @@ const io = new Server(server);
 app.use(express.static(__dirname));
 
 const rooms = {};
+const QUESTION_SECONDS = 50;
 
 const levelsOrder = ["90%", "80%", "70%", "60%", "50%", "40%", "30%", "20%", "10%", "5%", "1%"];
 
@@ -396,7 +397,7 @@ io.on('connection', (socket) => {
       currentQuestionIndex: -1,
       timer: null,
       autoAdvanceTimer: null,
-      timeLeft: 30,
+      timeLeft: QUESTION_SECONDS,
       isPaused: false,
       acceptingAnswers: false,
       lastQuestion: null,
@@ -541,10 +542,11 @@ io.on('connection', (socket) => {
         points: q.points,
         question: q.question,
         imageUrl: q.imageUrl,
-        options: q.options
+        options: q.options,
+        duration: QUESTION_SECONDS
       };
       room.lastQuestion = payload;
-      room.timeLeft = 30;
+      room.timeLeft = QUESTION_SECONDS;
       room.acceptingAnswers = true;
 
       io.to(roomId).emit('show-question', payload);

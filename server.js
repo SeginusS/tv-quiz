@@ -85,6 +85,18 @@ const questionsByLevel = {
     correct: "B"
    },
 
+    {
+    question: "[90%] Ποιο από τα τρια παιδιά θα φτάσει στο σπίτι;",
+    imageUrl: "eikones/spiti.jpg",
+    options: {
+        A: "ΜΑΡΙΑ",
+        B: "ΓΙΩΡΓΟΣ",
+        C: "ΔΗΜΗΤΡΑ",
+        D: "ΚΑΝΕΝΑ", },
+    correct: "B",
+    explanationImageUrl: "eikones/spitieks.jpg" 
+   },
+
   {
     question: "[90%] Σε ποια εικόνα κρύβεται ο σκίουρος;",
     imageUrl: "",

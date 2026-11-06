@@ -15,6 +15,8 @@
     .red { background: #ef4444; } .blue { background: #3b82f6; }
     .yellow { background: #f59e0b; } .green { background: #10b981; }
     .hidden { display: none; }
+    #textBox { margin-top: 20px; }
+    #textAnswer { width: 90%; max-width: 360px; }
   </style>
 </head>
 <body>
@@ -47,6 +49,13 @@
       <button class="ans-btn yellow" onclick="sendAnswer('C')">C</button>
       <button class="ans-btn green" onclick="sendAnswer('D')">D</button>
     </div>
+
+    <div id="textBox" class="hidden">
+      <input type="text" id="textAnswer" maxlength="60" placeholder="Γράψε την απάντησή σου"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send">
+      <br>
+      <button class="btn-main" onclick="sendText()">✅ Υποβολή</button>
+    </div>
   </div>
 
   <script>
@@ -54,6 +63,18 @@
     let currentRoom = '';
     let hasAnswered = false;
     let questionActive = false; // τρέχει ερώτηση αυτή τη στιγμή;
+    let questionType = 'choice'; // 'choice' (κουμπιά A-D) ή 'text' (πληκτρολόγηση)
+
+    // Δείχνει/κρύβει το σωστό είδος απάντησης (κουμπιά ή πεδίο κειμένου)
+    function hideAnswerUI() {
+      document.getElementById('buttonsGrid').classList.add('hidden');
+      document.getElementById('textBox').classList.add('hidden');
+    }
+    function showAnswerUI() {
+      const isText = questionType === 'text';
+      document.getElementById('buttonsGrid').classList.toggle('hidden', isText);
+      document.getElementById('textBox').classList.toggle('hidden', !isText);
+    }
 
     // Τρέχει σε ΚΑΘΕ σύνδεση του socket: στην αρχή αλλά και όταν το κινητό
     // ξαναβρεί δίκτυο ή ξυπνήσει από κλείδωμα οθόνης. Έτσι ξαναμπαίνει στο δωμάτιο
@@ -98,19 +119,19 @@
     socket.on('sync-state', (s) => {
       questionActive = s.questionActive;
       hasAnswered = s.answered;
+      questionType = s.questionType === 'text' ? 'text' : 'choice';
       if (!s.questionActive) return;
 
-      const grid = document.getElementById('buttonsGrid');
       const status = document.getElementById('statusMsg');
       if (s.paused) {
-        grid.classList.add('hidden');
+        hideAnswerUI();
         status.textContent = '⏸️ ΤΟ ΠΑΙΧΝΙΔΙ ΕΙΣΕΛΘΕ ΣΕ ΠΑΥΣΗ';
       } else if (s.answered) {
-        grid.classList.add('hidden');
+        hideAnswerUI();
         status.textContent = 'Η απάντησή σας κλειδώθηκε! 🤫';
       } else {
-        grid.classList.remove('hidden');
-        status.textContent = 'Επιλέξτε απάντηση!';
+        showAnswerUI();
+        status.textContent = questionType === 'text' ? 'Γράψτε την απάντησή σας!' : 'Επιλέξτε απάντηση!';
       }
     });
 
@@ -132,7 +153,7 @@
       currentRoom = '';
       hasAnswered = false;
       questionActive = false;
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
       document.getElementById('controllerSection').classList.add('hidden');
       document.getElementById('joinSection').classList.remove('hidden');
       document.getElementById('roomInput').value = '';
@@ -155,11 +176,31 @@
       socket.emit('terminate-game', currentRoom);
     }
 
-    socket.on('show-question', () => {
+    socket.on('show-question', (data) => {
       hasAnswered = false;
       questionActive = true;
-      document.getElementById('statusMsg').textContent = 'Επιλέξτε απάντηση!';
-      document.getElementById('buttonsGrid').classList.remove('hidden');
+      questionType = (data && data.type === 'text') ? 'text' : 'choice';
+      const input = document.getElementById('textAnswer');
+      input.value = '';
+      document.getElementById('statusMsg').textContent =
+        questionType === 'text' ? 'Γράψτε την απάντησή σας!' : 'Επιλέξτε απάντηση!';
+      showAnswerUI();
+    });
+
+    // Αποστολή απάντησης που πληκτρολογήθηκε
+    function sendText() {
+      if (hasAnswered || !questionActive) return;
+      const input = document.getElementById('textAnswer');
+      const text = input.value.trim();
+      if (!text) return;
+      hasAnswered = true;
+      socket.emit('submit-answer', { roomId: currentRoom, answer: text });
+      document.getElementById('statusMsg').textContent = `Η απάντησή σας (${text}) κλειδώθηκε! 🤫`;
+      input.blur();
+      hideAnswerUI();
+    }
+    document.getElementById('textAnswer').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendText();
     });
 
     function sendAnswer(ans) {
@@ -168,19 +209,19 @@
       
       socket.emit('submit-answer', { roomId: currentRoom, answer: ans });
       document.getElementById('statusMsg').textContent = `Η απάντησή σας (${ans}) κλειδώθηκε! 🤫`;
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
     }
 
     // ΟΤΑΝ ΜΠΑΙΝΕΙ ΣΕ ΠΑΥΣΗ, ΚΡΥΒΟΝΤΑΙ ΤΑ ΚΟΥΜΠΙΑ ΑΠΑΝΤΗΣΗΣ ΚΑΙ ΔΕΙΧΝΕΙ ΜΗΝΥΜΑ
     socket.on('game-paused', () => {
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
       document.getElementById('statusMsg').textContent = '⏸️ ΤΟ ΠΑΙΧΝΙΔΙ ΕΙΣΕΛΘΕ ΣΕ ΠΑΥΣΗ';
     });
 
     socket.on('game-resumed', () => {
       // Τα κουμπιά ξαναεμφανίζονται μόνο αν τρέχει ερώτηση και ο παίκτης δεν έχει απαντήσει
       if (questionActive && !hasAnswered) {
-        document.getElementById('buttonsGrid').classList.remove('hidden');
+        showAnswerUI();
         document.getElementById('statusMsg').textContent = '▶️ Το παιχνίδι συνεχίζεται κανονικά!';
       } else if (hasAnswered) {
         document.getElementById('statusMsg').textContent = 'Η απάντησή σας κλειδώθηκε! 🤫';
@@ -189,7 +230,7 @@
 
     socket.on('game-terminated', () => {
       questionActive = false;
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
       document.getElementById('statusMsg').textContent = '🛑 Ο διαχειριστής τερμάτισε το παιχνίδι.';
       const actionBtn = document.getElementById('actionBtn');
       if (actionBtn) actionBtn.textContent = '🚀 Έναρξη Παιχνιδιού';
@@ -197,13 +238,13 @@
 
     socket.on('reveal-answer', () => {
       questionActive = false;
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
       document.getElementById('statusMsg').textContent = 'Ο χρόνος έληξε! Δείτε τα αποτελέσματα στην τηλεόραση.';
     });
 
     socket.on('game-over', () => {
       questionActive = false;
-      document.getElementById('buttonsGrid').classList.add('hidden');
+      hideAnswerUI();
       document.getElementById('statusMsg').textContent = '🏆 Το παιχνίδι τελείωσε!';
       
       const actionBtn = document.getElementById('actionBtn');

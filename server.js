@@ -10,6 +10,40 @@ app.use(express.static(__dirname));
 
 const rooms = {};
 const QUESTION_SECONDS = 50;
+// Έξτρα δευτερόλεπτα ΜΟΝΟ για τις ερωτήσεις με πληκτρολόγηση (type: "text").
+// Μπορείς να βάλεις και δική της τιμή σε μία ερώτηση με  extraSeconds: 15
+const TEXT_EXTRA_SECONDS = 10;
+
+// ΠΩΣ ΓΡΑΦΕΤΑΙ ΕΡΩΤΗΣΗ ΜΕ ΠΛΗΚΤΡΟΛΟΓΗΣΗ (οι υπόλοιπες μένουν όπως είναι):
+//   {
+//     type: "text",
+//     question: "Ποια είναι η πρωτεύουσα της Ελλάδας;",
+//     imageUrl: "",                       // προαιρετικό, όπως και στις άλλες
+//     answers: ["Αθήνα", "Athens"],       // ΟΛΕΣ οι απαντήσεις που θεωρούμε σωστές
+//     display: "Αθήνα",                   // προαιρετικό: τι δείχνει η τηλεόραση ως σωστό (αλλιώς η 1η)
+//     explanation: "..."                  // προαιρετικό, όπως και στις άλλες
+//   }
+// Δεν χρειάζεται options ούτε correct. Δεν μετράνε τόνοι, κεφαλαία/πεζά και σημεία στίξης.
+
+// Κανονικοποίηση κειμένου: χωρίς τόνους, πεζά, ς=σ, χωρίς σημεία στίξης/πολλαπλά κενά
+function normalizeAnswer(text) {
+  return String(text == null ? '' : text)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/ς/g, 'σ')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+function isTextQuestion(q) {
+  return !!q && q.type === 'text';
+}
+
+function questionSeconds(q) {
+  if (!isTextQuestion(q)) return QUESTION_SECONDS;
+  const extra = Number.isFinite(q.extraSeconds) ? q.extraSeconds : TEXT_EXTRA_SECONDS;
+  return QUESTION_SECONDS + extra;
+}
 
 const levelsOrder = ["90%", "80%", "70%", "60%", "50%", "40%", "30%", "20%", "10%", "5%", "1%"];
 
@@ -338,6 +372,25 @@ const questionsByLevel = {
 };
 
 // Ο παίκτης που στέλνει την εντολή είναι ο διαχειριστής (host) του δωματίου;
+// Έλεγχος ερωτήσεων κατά την εκκίνηση: ΜΟΝΟ προειδοποιεί στο log του Render, δεν σταματά τίποτα
+function validateQuestions() {
+  for (const lvl in questionsByLevel) {
+    (questionsByLevel[lvl] || []).forEach((q, i) => {
+      const where = `[${lvl} #${i + 1}] `;
+      if (isTextQuestion(q)) {
+        if (!Array.isArray(q.answers) || q.answers.filter(a => normalizeAnswer(a)).length === 0) {
+          console.warn(where + 'ερώτηση πληκτρολόγησης χωρίς "answers"');
+        }
+      } else {
+        const keys = Object.keys(q.options || {}).join('');
+        if (keys !== 'ABCD') console.warn(where + 'τα κλειδιά των επιλογών είναι "' + keys + '" αντί για ABCD (προσοχή σε ελληνικά γράμματα!)');
+        else if (!['A', 'B', 'C', 'D'].includes(q.correct)) console.warn(where + 'το correct δεν είναι A, B, C ή D');
+      }
+    });
+  }
+}
+validateQuestions();
+
 function isHost(room, socket) {
   return !!(room && room.players[socket.id] && room.players[socket.id].isHost);
 }
@@ -479,7 +532,8 @@ io.on('connection', (socket) => {
       socket.emit('sync-state', {
         questionActive: !!room.acceptingAnswers,
         paused: !!room.isPaused,
-        answered: !!room.answersState[socket.id]
+        answered: !!room.answersState[socket.id],
+        questionType: room.lastQuestion ? room.lastQuestion.type : 'choice'
       });
     } else {
       socket.emit('error-message', 'Το δωμάτιο δεν βρέθηκε!');
@@ -542,11 +596,12 @@ io.on('connection', (socket) => {
         points: q.points,
         question: q.question,
         imageUrl: q.imageUrl,
-        options: q.options,
-        duration: QUESTION_SECONDS
+        type: isTextQuestion(q) ? 'text' : 'choice',
+        options: isTextQuestion(q) ? {} : q.options,
+        duration: questionSeconds(q)
       };
       room.lastQuestion = payload;
-      room.timeLeft = QUESTION_SECONDS;
+      room.timeLeft = payload.duration;
       room.acceptingAnswers = true;
 
       io.to(roomId).emit('show-question', payload);
@@ -565,7 +620,9 @@ io.on('connection', (socket) => {
           room.acceptingAnswers = false; // Από εδώ και πέρα δεν δεχόμαστε άλλες απαντήσεις
           
           io.to(roomId).emit('reveal-answer', {
+              type: payload.type,
               correct: q.correct,
+              correctText: isTextQuestion(q) ? String(q.display || (q.answers && q.answers[0]) || '') : '',
               playersList: Object.values(room.players),
               answersState: room.answersState
           });
@@ -624,14 +681,25 @@ io.on('connection', (socket) => {
     const room = rooms[roomId];
     // Απορρίπτεται αν: δεν υπάρχει δωμάτιο, είναι σε παύση, ή η ερώτηση έχει ήδη κλείσει
     if (!room || room.isPaused || !room.acceptingAnswers) return;
-    if (!['A', 'B', 'C', 'D'].includes(answer)) return;
 
     const qIndex = room.currentQuestionIndex;
     const currentQ = room.selectedQuestions[qIndex];
     const player = room.players[socket.id];
+    if (!currentQ || !player) return;
 
-    if (currentQ && player && !room.answersState[socket.id]) {
-      const isCorrect = (answer === currentQ.correct);
+    let isCorrect;
+    if (isTextQuestion(currentQ)) {
+      if (typeof answer !== 'string') return;
+      answer = answer.trim().slice(0, 60);
+      if (!answer) return;
+      const given = normalizeAnswer(answer);
+      isCorrect = !!given && (currentQ.answers || []).some(a => normalizeAnswer(a) === given);
+    } else {
+      if (!['A', 'B', 'C', 'D'].includes(answer)) return;
+      isCorrect = (answer === currentQ.correct);
+    }
+
+    if (!room.answersState[socket.id]) {
       if (isCorrect) player.score += currentQ.points;
 
       room.answersState[socket.id] = {

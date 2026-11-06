@@ -292,6 +292,52 @@
             height: 100%;
         }
 
+        /* Ερώτηση με πληκτρολόγηση: κρύβουμε τα κουτιά A-D και δείχνουμε οδηγία / αποτελέσματα */
+        .game-card.text-mode .options-grid { display: none; }
+        .text-panel {
+            display: none;
+            flex: 0 0 auto;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.4vh;
+            padding: 1vh 0;
+        }
+        .game-card.text-mode .text-panel { display: flex; }
+        .text-prompt {
+            font-size: 3.4vh;
+            color: #fbbf24;
+            font-weight: bold;
+            text-align: center;
+        }
+        .text-reveal { display: none; flex-direction: column; align-items: center; gap: 1.4vh; width: 100%; }
+        .text-correct {
+            background: #059669;
+            border: 2px solid #34d399;
+            border-radius: 12px;
+            padding: 1vh 2vw;
+            font-size: 4vh;
+            font-weight: bold;
+            text-align: center;
+        }
+        .text-answers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1vh 1vw;
+            width: 100%;
+        }
+        .text-chip {
+            background: #334155;
+            border: 2px solid #475569;
+            border-radius: 999px;
+            padding: 0.8vh 1.6vw;
+            font-size: 2.8vh;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+        .text-chip.ok { background: #065f46; border-color: #34d399; }
+        .text-chip.bad { background: #7f1d1d; border-color: #f87171; }
+
         .correct-ans {
             background: #059669 !important;
             border: 2px solid #34d399;
@@ -442,6 +488,14 @@
                 <img id="qImage" class="question-img" src="" alt="" style="display:none;">
                 <h3 id="qText"></h3>
 
+                <div class="text-panel" id="textPanel">
+                    <div class="text-prompt" id="textPrompt">✍️ Γράψε την απάντησή σου στο κινητό σου</div>
+                    <div class="text-reveal" id="textReveal">
+                        <div class="text-correct" id="textCorrect"></div>
+                        <div class="text-answers" id="textAnswers"></div>
+                    </div>
+                </div>
+
                 <div class="options-grid" id="optionsGridContainer">
                     <div id="optA" class="option"><span>A: ...</span><div class="avatars-container" id="avatarsA"></div></div>
                     <div id="optB" class="option"><span>B: ...</span><div class="avatars-container" id="avatarsB"></div></div>
@@ -533,7 +587,8 @@
                 imgEl.style.display = 'none';
             }
 
-            const hasImageOptions = Object.values(data.options).some(opt => {
+            const isText = data.type === 'text';
+            const hasImageOptions = !isText && Object.values(data.options || {}).some(opt => {
                 if (typeof opt === 'object' && opt !== null) return opt.type === 'image';
                 if (typeof opt === 'string' && (opt.startsWith('http://') || opt.startsWith('https://'))) return true;
                 return false;
@@ -542,7 +597,10 @@
             const hasMainImage = (data.imageUrl && data.imageUrl.trim() !== '');
             const gameCardEl = document.querySelector('.game-card');
 
-            gameCardEl.classList.remove('image-options-mode', 'both-images-mode');
+            gameCardEl.classList.remove('image-options-mode', 'both-images-mode', 'text-mode');
+            gameCardEl.classList.toggle('text-mode', isText);
+            document.getElementById('textPrompt').style.display = 'block';
+            document.getElementById('textReveal').style.display = 'none';
 
             if (hasMainImage && hasImageOptions) {
                 gameCardEl.classList.add('both-images-mode');
@@ -592,10 +650,12 @@
                 }
             }
 
-            setOptionContent('A', data.options.A);
-            setOptionContent('B', data.options.B);
-            setOptionContent('C', data.options.C);
-            setOptionContent('D', data.options.D);
+            if (!isText) {
+                setOptionContent('A', data.options.A);
+                setOptionContent('B', data.options.B);
+                setOptionContent('C', data.options.C);
+                setOptionContent('D', data.options.D);
+            }
 
             ['A', 'B', 'C', 'D'].forEach(opt => {
                 document.getElementById(`opt${opt}`).classList.remove('correct-ans');
@@ -630,6 +690,35 @@
 
         socket.on('reveal-answer', (data) => {
             document.getElementById('pauseOverlay').style.display = 'none';
+
+            // Ερώτηση πληκτρολόγησης: δείχνουμε τη σωστή απάντηση και τι έγραψε ο καθένας
+            if (data.type === 'text') {
+                document.getElementById('textPrompt').style.display = 'none';
+                document.getElementById('textReveal').style.display = 'flex';
+                document.getElementById('textCorrect').textContent = '✅ ' + (data.correctText || '');
+                const box = document.getElementById('textAnswers');
+                box.innerHTML = '';
+                const given = data.answersState || {};
+                const answeredNames = new Set();
+                for (let id in given) {
+                    const a = given[id];
+                    answeredNames.add(a.name);
+                    const chip = document.createElement('div');
+                    chip.className = 'text-chip ' + (a.isCorrect ? 'ok' : 'bad');
+                    chip.textContent = `${a.name}: ${a.answer} ${a.isCorrect ? '✓' : '✗'}`;
+                    box.appendChild(chip);
+                }
+                (data.playersList || []).forEach(pl => {
+                    if (answeredNames.has(pl.name)) return;
+                    const chip = document.createElement('div');
+                    chip.className = 'text-chip bad';
+                    chip.textContent = `${pl.name}: —`;
+                    box.appendChild(chip);
+                });
+                updateScoreboard(data.playersList);
+                return;
+            }
+
             document.getElementById(`opt${data.correct}`).classList.add('correct-ans');
 
             for (let id in data.answersState) {
